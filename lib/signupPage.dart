@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:fyp/services/authservice.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);

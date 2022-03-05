@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:fyp/services/authservice.dart';
+import 'package:fyp/templateListDrawer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,12 +13,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Color greenColor = const Color(0xFF00AF19);
-
+  final GlobalKey<ScaffoldState> _ScaffoldKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.green[50],
+      key: _ScaffoldKey,
+      drawer: TemplateDrawer(),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         elevation: 1.0,
         actions: <Widget>[
           Padding(
@@ -105,7 +108,10 @@ class _HomePageState extends State<HomePage> {
             borderRadius: BorderRadius.circular(50),
           ), // LinearGradientBoxDecoration
           child: InkWell(
-            onTap: () {},
+            onTap: () {
+              _ScaffoldKey.currentState!.openDrawer();
+              print('Opened');
+            },
             customBorder: CircleBorder(),
             child: Center(
               child: Column(
@@ -137,7 +143,6 @@ class _HomePageState extends State<HomePage> {
           ), // Red will correctly spread over gradient
         ),
       ),
-
       bottomNavigationBar: BottomAppBar(
         child: bottomBarWidget(),
       ),

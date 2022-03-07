@@ -47,18 +47,27 @@ class _TemplatePageState extends State<TemplatePage> {
                 height: MediaQuery.of(context).size.height * 0.1,
                 color: Colors.grey[200],
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20),
-                      child: Text(
-                        widget.templateName,
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: greenColor,
-                        ),
+                    Text(
+                      widget.templateName,
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: greenColor,
                       ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.forward,
+                        color: greenColor,
+                        size: 35,
+                      ),
+                      onPressed: () {
+                        widget.template = _editingController.value.text;
+                        SettingDefaultStuff()
+                            .setEditedTemplateForUser(value: widget.template);
+                      },
                     ),
                     IconButton(
                       icon: Icon(
@@ -114,21 +123,22 @@ class _TemplatePageState extends State<TemplatePage> {
 
   Widget _editTitleTextField() {
     if (_isEditingText)
+      // ignore: curly_braces_in_flow_control_structures
       return Center(
         child: TextField(
-          //keyboardType: TextInputType.multiline,
+          keyboardType: TextInputType.multiline,
           maxLines: null,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
-          onSubmitted: (newValue) {
-            setState(() {
-              widget.template = newValue;
-              _isEditingText = false;
-            });
-          },
+          // onSubmitted: (newValue) {
+          //   setState(() {
+          //     widget.template = newValue;
+          //     _isEditingText = false;
+          //   });
+          // },
           autofocus: true,
           controller: _editingController,
         ),

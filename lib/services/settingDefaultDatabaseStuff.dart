@@ -1,4 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fyp/services/authservice.dart';
 
 class SettingDefaultStuff {
   final databaseReference = FirebaseDatabase.instance.ref();
@@ -38,7 +39,37 @@ class SettingDefaultStuff {
     //print(template);
     return template;
   }
+
   //For getting Default Descriptions
+  void setUser(
+      {required String name,
+      required String email,
+      required String phoneNumber,
+      required String cnic,
+      required String id}) {
+    databaseReference.child('Users').child(id).set(
+      {
+        'name': name,
+        'email': email,
+        'phoneNumber': phoneNumber,
+        'cnic': cnic,
+      },
+    );
+  }
+
+  void setEditedTemplateForUser({required String value}) {
+    String id = AuthService().getUid();
+    databaseReference
+        .child('Users')
+        .child(id)
+        .child('Contracts')
+        .child('editedContracts')
+        .set(
+      {
+        'template': value,
+      },
+    );
+  }
 
   void setDefaultDescription() {
     databaseReference.child("ContractDescription").child('Rental').set(

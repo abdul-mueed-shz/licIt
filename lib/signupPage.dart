@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+
 import 'package:fyp/services/authservice.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fyp/services/settingDefaultDatabaseStuff.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -241,7 +243,14 @@ class _SignUpState extends State<SignUp> {
             backgroundColor: greenColor,
             onPressed: () {
               if (checkFields()) {
-                AuthService().SignUp(email!, password!, context);
+                AuthService().SignUp(
+                  name: name!,
+                  email: email!,
+                  password: password!,
+                  phoneNumber: phoneNumber!,
+                  cnic: cnic!,
+                  context: context,
+                );
               }
             },
             child: Icon(

@@ -5,14 +5,14 @@ class SettingDefaultStuff {
   final databaseReference = FirebaseDatabase.instance.ref();
 
   //For getting Default Templates
-  final templateDescRef =
+  final contractsRef =
       FirebaseDatabase.instance.ref().child('ContractDescription');
 
   final contractTemplateRef =
       FirebaseDatabase.instance.ref().child('ContractTemplate');
 
-  Future<String> getData({required String templateName}) async {
-    final snapshot = await templateDescRef.get();
+  Future<String> getDescriptionData({required String templateName}) async {
+    final snapshot = await contractsRef.get();
     Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
     String description = 'No Description';
     values.forEach(
@@ -24,6 +24,35 @@ class SettingDefaultStuff {
     );
     return description;
   }
+
+  Future<List<String>> getContractLists() async {
+    final snapshot = await contractsRef.get();
+    Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
+    List<String> contractList = [];
+    values.forEach(
+      (key, data) {
+        contractList.add(key);
+      },
+    );
+    return contractList;
+  }
+
+  Future<List<String>> getsublistForContract(
+      {required String contractName}) async {
+    final snapshot =
+        await contractsRef.child(contractName).child('SubTypes').get();
+    Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
+    List<String> contractList = [];
+    values.forEach(
+      (key, data) {
+        contractList.add(key);
+      },
+    );
+    print(contractList);
+    return contractList;
+  }
+
+  //Function for getting sub-types of templates
 
   Future<String> getTemplate({required String templateName}) async {
     final snapshot = await contractTemplateRef.get();
@@ -71,13 +100,25 @@ class SettingDefaultStuff {
     );
   }
 
-  void setDefaultDescription() {
+  void setContractDetails() {
     databaseReference.child("ContractDescription").child('Rental').set(
       {
         'description':
             'An Operating Lease which is month-to-month and which is cancelable. Responsible Officer. The chief financial officer of the Borrower and any other officer of the Borrower designated by the chief financial officer to sign Borrowing Base Reports and Notices of Borrowing or Conversion. Restricted Payment. Any dividend, distribution, loan, advance, guaranty, extension of credit or other payment, whether in cash or property to or for the benefit of any Person who holds an equity interest in the Borrower or any of its Subsidiaries, whether or not such interest is evidenced by a security, and any purchase, redemption, retirement or other acquisition for value of any capital stock of the Borrower or any of its Subsidiaries, whether now or hereafter outstanding, or of any options, warrants or similar rights to purchase such capital stock or any security convertible into or exchangeable for such capital stock. Revolving Credit Assignment of Leases. A third amended and restated assignment of leases, dated the Closing Date, by the Borrower in favor of the Agent for the benefit of the Lenders, as amended, supplemented and in effect from time to time, and any supplement thereto',
       },
     );
+    databaseReference
+        .child("ContractDescription")
+        .child('Rental')
+        .child('SubTypes')
+        .set(
+      {
+        'House Rental': '',
+        'Car Rental': '',
+        'Apartment Rental': '',
+      },
+    );
+
     databaseReference.child("ContractDescription").child('Loan').set(
       {
         'description':
@@ -107,6 +148,12 @@ class SettingDefaultStuff {
       },
     );
     databaseReference.child("ContractTemplate").child('Freelance').set(
+      {
+        'template':
+            '  Duration of Agreement: 2 months\tFrom: Your name\n\n1: The monthly amount shall be _______ per month.\n2: The monthly free lance fee shall be paid through the bank transfer.\n3: The Fee can be collected by the freelancer only.\n4: No other person can collect the fee.',
+      },
+    );
+    databaseReference.child("ContractTemplate").child('House Rental').set(
       {
         'template':
             '  Duration of Agreement: 2 months\tFrom: Your name\n\n1: The monthly amount shall be _______ per month.\n2: The monthly free lance fee shall be paid through the bank transfer.\n3: The Fee can be collected by the freelancer only.\n4: No other person can collect the fee.',

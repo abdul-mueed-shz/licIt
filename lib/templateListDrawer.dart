@@ -22,7 +22,7 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
 
   //Content To display Conditions
   // ignore: non_constant_identifier_names
-  bool IstemplateSelected = false;
+  bool IsContractSelected = false;
   String? currentSelectedTemplate;
 
   //
@@ -72,7 +72,7 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
                     ],
                   ),
                 ),
-                listViewItems(),
+                widgetSelector(),
                 SizedBox(
                   height: 30,
                 ),
@@ -84,9 +84,9 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
     );
   }
 
-  listViewItems() {
-    return !IstemplateSelected
-        ? templatesList()
+  widgetSelector() {
+    return !IsContractSelected
+        ? contractsListView()
         : currentSelectedTemplate != null
             ? selectedTemplateWithDescription()
             : Container(
@@ -154,7 +154,7 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
               child: Padding(
                 padding: EdgeInsets.all(20),
                 child: FutureBuilder(
-                  future: SettingDefaultStuff().getData(
+                  future: SettingDefaultStuff().getDescriptionData(
                     templateName: currentSelectedTemplate.toString(),
                   ),
                   builder: (context, AsyncSnapshot<String> snapshot) {
@@ -197,7 +197,7 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
                 backgroundColor: greenColor,
                 onPressed: () {
                   setState(() {
-                    IstemplateSelected = false;
+                    IsContractSelected = false;
                     currentSelectedTemplate = null;
                   });
                 },
@@ -216,7 +216,7 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
                       fontWeight: FontWeight.bold,
                     )),
                 onPressed: () {
-                  IstemplateSelected = false;
+                  IsContractSelected = false;
 
                   String currenttemplateName =
                       currentSelectedTemplate.toString();
@@ -242,48 +242,86 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
     );
   }
 
-//  Widget buildMenuItem({String templateName}) {
-  templatesList() {
+  // List<String> contractSubList = [];
+  // contractsSubListView(String contractName) {
+  //   return Expanded(
+  //     child: FutureBuilder(
+  //       future: SettingDefaultStuff()
+  //           .getsublistForContract(contractName: contractName),
+  //       builder: (context, AsyncSnapshot<List<String>> snapshot) {
+  //         if (snapshot.hasError)
+  //           return Text(
+  //             '${snapshot.error}',
+  //             style: TextStyle(
+  //               fontSize: 20,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.white,
+  //             ),
+  //           );
+  //         if (snapshot.hasData) {
+  //           contractSubList = snapshot.data!;
+  //           return ListView.builder(
+  //             padding: EdgeInsets.only(
+  //               left: 30,
+  //               right: 30,
+  //             ),
+  //             itemCount: contractList.length,
+  //             itemBuilder: (context, index) {
+  //               return buildContractItems(templateName: contractList[index]);
+  //             },
+  //           );
+  //         }
+  //         return const CircularProgressIndicator();
+  //       },
+  //     ),
+  //   );
+  // }
+
+  List<String> contractList = [];
+  contractsListView() {
     return Expanded(
-      child: ListView(
-        padding: EdgeInsets.only(
-          left: 30,
-          right: 30,
-        ),
-        children: [
-          SizedBox(
-            height: 30,
-          ),
-          buildMenuItem(
-            templateName: 'Rental',
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          buildMenuItem(
-            templateName: 'Freelance',
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          buildMenuItem(
-            templateName: 'Loan',
-          ),
-          SizedBox(
-            height: 30,
-          ),
-        ],
+      child: FutureBuilder(
+        future: SettingDefaultStuff().getContractLists(),
+        builder: (context, AsyncSnapshot<List<String>> snapshot) {
+          if (snapshot.hasError)
+            return Text(
+              '${snapshot.error}',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            );
+          if (snapshot.hasData) {
+            contractList = snapshot.data!;
+            return ListView.builder(
+              padding: EdgeInsets.only(
+                left: 30,
+                right: 30,
+              ),
+              itemCount: contractList.length,
+              itemBuilder: (context, index) {
+                return buildContractItems(templateName: contractList[index]);
+              },
+            );
+          }
+          return const CircularProgressIndicator();
+        },
       ),
     );
   }
 
-  buildMenuItem({required String templateName}) {
+  buildContractItems({required String templateName}) {
     return Container(
       decoration: BoxDecoration(
         color: greenColor, //Colors.grey[350],
         borderRadius: BorderRadius.circular(20),
       ),
       height: 60,
+      margin: EdgeInsets.only(
+        top: 10,
+        bottom: 10,
+      ),
       padding: EdgeInsets.only(
         left: 30,
         right: 30,
@@ -304,21 +342,12 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
           ),
         ),
         onTap: () {
-          setState(() {
-            IstemplateSelected = true;
-            currentSelectedTemplate = templateName;
-            //print(currentSelectedTemplate);
-            //_isTemplateSelected = true;
-          });
-
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => TemplatePage(
-          //       templateName: templateName,
-          //     ),
-          //   ),
-          // );
+          setState(
+            () {
+              IsContractSelected = true;
+              currentSelectedTemplate = templateName;
+            },
+          );
         },
       ),
     );

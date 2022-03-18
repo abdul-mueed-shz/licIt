@@ -22,7 +22,7 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
 
   //Content To display Conditions
   // ignore: non_constant_identifier_names
-  bool IsContractSelected = false;
+  bool IsContractSublistSelected = false;
   String? currentSelectedTemplate;
 
   //
@@ -85,7 +85,23 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
   }
 
   widgetSelector() {
-    return !IsContractSelected
+    // return !IsContractSublistSelected
+    //     ? contractsListView()
+    //     : currentSelectedTemplate != null
+    //         ? contractsSubListView(contractName: currentSelectedTemplate!)
+    //         : Container(
+    //             child: Center(
+    //               child: RaisedButton(onPressed: () {
+    //                 Navigator.push(
+    //                   context,
+    //                   MaterialPageRoute(
+    //                     builder: (context) => HomePage(),
+    //                   ),
+    //                 );
+    //               }),
+    //             ),
+    //           );
+    return !IsContractSublistSelected
         ? contractsListView()
         : currentSelectedTemplate != null
             ? selectedTemplateWithDescription()
@@ -197,7 +213,7 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
                 backgroundColor: greenColor,
                 onPressed: () {
                   setState(() {
-                    IsContractSelected = false;
+                    IsContractSublistSelected = false;
                     currentSelectedTemplate = null;
                   });
                 },
@@ -216,7 +232,7 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
                       fontWeight: FontWeight.bold,
                     )),
                 onPressed: () {
-                  IsContractSelected = false;
+                  IsContractSublistSelected = false;
 
                   String currenttemplateName =
                       currentSelectedTemplate.toString();
@@ -241,41 +257,6 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
       ),
     );
   }
-
-  // List<String> contractSubList = [];
-  // contractsSubListView(String contractName) {
-  //   return Expanded(
-  //     child: FutureBuilder(
-  //       future: SettingDefaultStuff()
-  //           .getsublistForContract(contractName: contractName),
-  //       builder: (context, AsyncSnapshot<List<String>> snapshot) {
-  //         if (snapshot.hasError)
-  //           return Text(
-  //             '${snapshot.error}',
-  //             style: TextStyle(
-  //               fontSize: 20,
-  //               fontWeight: FontWeight.bold,
-  //               color: Colors.white,
-  //             ),
-  //           );
-  //         if (snapshot.hasData) {
-  //           contractSubList = snapshot.data!;
-  //           return ListView.builder(
-  //             padding: EdgeInsets.only(
-  //               left: 30,
-  //               right: 30,
-  //             ),
-  //             itemCount: contractList.length,
-  //             itemBuilder: (context, index) {
-  //               return buildContractItems(templateName: contractList[index]);
-  //             },
-  //           );
-  //         }
-  //         return const CircularProgressIndicator();
-  //       },
-  //     ),
-  //   );
-  // }
 
   List<String> contractList = [];
   contractsListView() {
@@ -344,7 +325,7 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
         onTap: () {
           setState(
             () {
-              IsContractSelected = true;
+              IsContractSublistSelected = true;
               currentSelectedTemplate = templateName;
             },
           );
@@ -352,4 +333,80 @@ class _TemplateDrawerState extends State<TemplateDrawer> {
       ),
     );
   }
+  // List<String> contractSubList = [];
+  // contractsSubListView({required String contractName}) {
+  //   return Expanded(
+  //     child: FutureBuilder(
+  //       future: SettingDefaultStuff()
+  //           .getsublistForContract(contractName: contractName),
+  //       builder: (context, AsyncSnapshot<List<String>> snapshot) {
+  //         if (snapshot.hasError)
+  //           return Text(
+  //             '${snapshot.error}',
+  //             style: TextStyle(
+  //               fontSize: 20,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.white,
+  //             ),
+  //           );
+  //         if (snapshot.hasData) {
+  //           contractSubList = snapshot.data!;
+  //           print(contractSubList);
+  //           return ListView.builder(
+  //             padding: EdgeInsets.only(
+  //               left: 30,
+  //               right: 30,
+  //             ),
+  //             itemCount: contractList.length,
+  //             itemBuilder: (context, index) {
+  //               return buildSubContractItems(templateName: contractList[index]);
+  //             },
+  //           );
+  //         }
+  //         return const CircularProgressIndicator();
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // buildSubContractItems({required String templateName}) {
+  //   print(contractSubList);
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //       color: greenColor, //Colors.grey[350],
+  //       borderRadius: BorderRadius.circular(20),
+  //     ),
+  //     height: 60,
+  //     margin: EdgeInsets.only(
+  //       top: 10,
+  //       bottom: 10,
+  //     ),
+  //     padding: EdgeInsets.only(
+  //       left: 30,
+  //       right: 30,
+  //     ),
+  //     child: ListTile(
+  //       title: SingleChildScrollView(
+  //         child: Padding(
+  //           padding: EdgeInsets.all(
+  //             5,
+  //           ),
+  //           child: Text(
+  //             templateName,
+  //             style: TextStyle(
+  //               color: Colors.white,
+  //               fontSize: 20,
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //       onTap: () {
+  //         setState(
+  //           () {},
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
+
 }

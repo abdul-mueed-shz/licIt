@@ -41,28 +41,27 @@ class _SignUpState extends State<SignUp> {
 
   String? validateCnic(String value) {
     //TO DO
-
-    // String pattern = r'';
-    // RegExp regex = RegExp(pattern);
-    // if (!regex.hasMatch(value)) {
-    //   return 'Enter Valid Cnic';
-    // } else {
-    //   return null;
-    // }
-    return null;
+    String pattern = r'^\d{5}(-)?\d{7}(-)?\d{1}$';
+    RegExp regex = RegExp(pattern);
+    if (!regex.hasMatch(value)) {
+      return 'Enter Valid Cnic';
+    } else {
+      return null;
+    }
   }
 
   String? validatePhoneNumber(String value) {
+    if (value.length != 11) {
+      return 'Enter Valid Phone Number';
+    }
     //TO DO
-
-    // String pattern = r'';
-    // RegExp regex = RegExp(pattern);
-    // if (!regex.hasMatch(value)) {
-    //   return 'Enter Valid Cnic';
-    // } else {
-    //   return null;
-    // }
-    return null;
+    String pattern = r'^[0][0-9]{10}$';
+    RegExp regex = RegExp(pattern);
+    if (!regex.hasMatch(value)) {
+      return 'Phone Number must be of the form 0XXXXXXXXXX';
+    } else {
+      return null;
+    }
   }
 
   @override
@@ -190,7 +189,7 @@ class _SignUpState extends State<SignUp> {
             },
             validator: (value) => value!.isEmpty
                 ? 'Phone Number can\'t be empty'
-                : validateCnic(value),
+                : validatePhoneNumber(value),
           ),
           TextFormField(
             decoration: InputDecoration(

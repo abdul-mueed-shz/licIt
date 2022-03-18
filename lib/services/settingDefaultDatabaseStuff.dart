@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fyp/services/authservice.dart';
+import 'package:uuid/uuid.dart';
 
 class SettingDefaultStuff {
   final databaseReference = FirebaseDatabase.instance.ref();
@@ -34,6 +35,7 @@ class SettingDefaultStuff {
         contractList.add(key);
       },
     );
+    //print(contractList);
     return contractList;
   }
 
@@ -48,7 +50,7 @@ class SettingDefaultStuff {
         contractList.add(key);
       },
     );
-    print(contractList);
+    //print(contractList);
     return contractList;
   }
 
@@ -87,15 +89,19 @@ class SettingDefaultStuff {
   }
 
   void setEditedTemplateForUser({required String value}) {
+    var uuid = Uuid();
+    String contractSpecificId = uuid.v4();
+
     String id = AuthService().getUid();
     databaseReference
         .child('Users')
         .child(id)
         .child('Contracts')
         .child('editedContracts')
+        .child(contractSpecificId)
         .set(
       {
-        'template': value,
+        'contract': value,
       },
     );
   }

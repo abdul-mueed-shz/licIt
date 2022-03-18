@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fyp/services/settingDefaultDatabaseStuff.dart';
 
 class TemplatePage extends StatefulWidget {
@@ -64,6 +65,12 @@ class _TemplatePageState extends State<TemplatePage> {
                         size: 35,
                       ),
                       onPressed: () {
+                        Fluttertoast.showToast(
+                            msg: "Edited Contract Saved", // message
+                            toastLength: Toast.LENGTH_SHORT, // length
+                            gravity: ToastGravity.CENTER, // location
+                            timeInSecForIosWeb: 1 // duration
+                            );
                         widget.template = _editingController.value.text;
                         SettingDefaultStuff()
                             .setEditedTemplateForUser(value: widget.template);

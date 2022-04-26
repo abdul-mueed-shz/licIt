@@ -81,6 +81,7 @@ class SettingDefaultStuff {
     databaseReference.child('Users').child(id).set(
       {
         'name': name,
+        'uid': id,
         'email': email,
         'phoneNumber': phoneNumber,
         'cnic': cnic,

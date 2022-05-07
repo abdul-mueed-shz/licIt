@@ -316,7 +316,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           await userRepository.checkExist(cnicNoController.text);
       if (checkValidation == 'User Exist') {
         EasyLoading.dismiss();
+        setState(() {
+          isLoading=false;
+        });
         EasyLoading.showError("User is Already exist");
+
         return;
       } else if (checkValidation == 'no user Found') {
         String passwordHashing =

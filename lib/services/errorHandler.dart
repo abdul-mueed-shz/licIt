@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ErrorHandler {
-  Future errorDialogue(BuildContext context, e) {
+  static Future errorDialogue(BuildContext context, e) {
     return showCupertinoDialog(
         context: context,
         builder: (context) {

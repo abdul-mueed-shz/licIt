@@ -309,7 +309,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       Fluttertoast.showToast(
           msg: "Please Wait We create the user ", // message
           toastLength: Toast.LENGTH_LONG, // length
-          gravity: ToastGravity.CENTER, // location
+          gravity: ToastGravity.BOTTOM, // location
           timeInSecForIosWeb: 1 // duration
           );
       final checkValidation =

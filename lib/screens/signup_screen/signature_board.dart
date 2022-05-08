@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:signature/signature.dart';
 class SignatureBoard extends StatefulWidget {
+  const SignatureBoard({Key? key}) : super(key: key);
+
   @override
   _SignatureBoardState createState() => _SignatureBoardState();
 }

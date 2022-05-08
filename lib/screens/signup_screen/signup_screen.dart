@@ -364,14 +364,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }).catchError(
           (error) {
             EasyLoading.dismiss();
-            Future.delayed(const Duration(seconds: 1));
+            setState(() {
+              isLoading = false;
+            });
             return EasyLoading.showError(error);
           },
         );
       } else {
+        setState(() {
+          isLoading = false;
+        });
         return EasyLoading.showError(checkValidation);
       }
     } else {
+      setState(() {
+        isLoading = false;
+      });
       return EasyLoading.showError("Please Fill all the Field");
     }
   }

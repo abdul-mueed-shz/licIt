@@ -309,14 +309,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
       Fluttertoast.showToast(
           msg: "Please Wait We create the user ", // message
           toastLength: Toast.LENGTH_LONG, // length
-          gravity: ToastGravity.CENTER, // location
+          gravity: ToastGravity.BOTTOM, // location
           timeInSecForIosWeb: 1 // duration
           );
       final checkValidation =
           await userRepository.checkExist(cnicNoController.text);
       if (checkValidation == 'User Exist') {
         EasyLoading.dismiss();
+        setState(() {
+          isLoading=false;
+        });
         EasyLoading.showError("User is Already exist");
+
         return;
       } else if (checkValidation == 'no user Found') {
         String passwordHashing =

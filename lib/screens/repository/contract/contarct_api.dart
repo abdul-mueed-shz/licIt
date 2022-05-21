@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fyp/model/contract_model.dart';
 import 'package:fyp/screens/repository/contract/contract_repository.dart';
+import 'package:fyp/util/pref.dart';
 
 class ContractApi implements IContractRepository {
   final user = FirebaseFirestore.instance;
@@ -8,7 +9,7 @@ class ContractApi implements IContractRepository {
   final CollectionReference<ContractModel> modelsRef = FirebaseFirestore
       .instance
       .collection('users')
-      .doc("3123456789123")
+      .doc(Prefs.instance.getLoginUserId() ?? "3123456789123")
       .collection("contract")
       .withConverter<ContractModel>(
         fromFirestore: (snapshot, _) =>

@@ -1,3 +1,4 @@
+import 'package:fyp/model/contract_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'local_user.g.dart';

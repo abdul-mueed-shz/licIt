@@ -1,9 +1,30 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp/model/contract_model.dart';
 import 'package:fyp/screens/login_page/login_screen.dart';
+import 'package:fyp/screens/promise_agreement/component/additional_screen.dart';
+import 'package:fyp/screens/promise_agreement/component/penalties_screen.dart';
+import 'package:fyp/screens/promise_agreement/component/time_line.dart';
+import 'package:fyp/screens/promise_agreement/promise_agreement.dart';
+import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/util/pref.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+final List<String> tabs = [
+  'All',
+  'Active',
+  'Drafts',
+  'Pending',
+  'Rejected',
+  'Deleted'
+];
 
 class HomePage extends StatefulWidget {
+  static const String routeName = '/HomePage';
+
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -11,257 +32,253 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  final cnic = Prefs.instance.getLoginUserId();
   Color greenColor = const Color(0xFF00AF19);
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      // drawer: TemplateDrawer(),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        elevation: 1.0,
-        actions: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: 10.0),
-            child: IconButton(
-              icon: Icon(
-                Icons.logout,
-                size: 35.0,
-                color: greenColor,
-              ),
-              onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
-              },
-            ),
+    return DefaultTabController(
+      length: tabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.grey,
+          title: Text(
+            'Rental App',
+            style: GoogleFonts.lato(),
           ),
-        ],
-        title: SizedBox(
-          width: 120,
-          child: Stack(
-            children: [
-              Text(
-                'LicIt',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+          centerTitle: true,
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 10.0),
+              child: IconButton(
+                icon: Icon(
+                  Icons.logout,
+                  size: 35.0,
+                  color: greenColor,
                 ),
-              ),
-              Positioned(
-                top: 24.0,
-                left: 60.0,
-                child: Container(
-                  height: 5,
-                  width: 5,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: greenColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        backgroundColor: Colors.grey[300],
-      ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          //mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            topBarWidget(),
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: 0.5,
-              child: Container(
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(
-              height: 20.0,
-            ),
-            Expanded(
-              flex: 1,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 30.0, right: 30.0),
-                  child: Text(
-                    'Contracts list',
-                  ),
-                ),
+                onPressed: () {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                },
               ),
             ),
           ],
+          bottom: TabBar(
+            isScrollable: true,
+            indicatorColor: Colors.green,
+            labelStyle: TextStyle(fontSize: 14.0),
+            tabs: tabs
+                .map((e) => Tab(
+                      text: e,
+                      height: 30,
+                      iconMargin: EdgeInsets.all(20),
+                    ))
+                .toList(),
+          ),
         ),
-      ),
-      floatingActionButton: Material(
-        color: Colors.transparent,
-        child: Ink(
-          width: 120,
-          height: 110,
-          decoration: BoxDecoration(
-            color: Colors.grey[300],
-            borderRadius: BorderRadius.circular(50),
-          ), // LinearGradientBoxDecoration
-          child: InkWell(
-            onTap: () {
-              scaffoldKey.currentState!.openDrawer();
-              print('Opened');
-            },
-            customBorder: CircleBorder(),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.add,
-                    size: 55.0,
-                    color: greenColor,
-                  ),
-                  Text(
-                    'Choose',
-                    style: TextStyle(
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'Template',
-                    style: TextStyle(
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            splashColor: Colors.blueGrey,
-          ), // Red will correctly spread over gradient
+        body: TabBarView(
+          children: [
+            AllTabView(onPressed: () {}),
+            Center(child: Text('Active')),
+            TabDraftView(),
+            Center(child: Text('Pending')),
+            Center(child: Text('Rejected')),
+            Center(child: Text('Deleted')),
+          ],
         ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: bottomBarWidget(),
       ),
     );
   }
 }
 
-topBarWidget() {
-  return Container(
-    color: Colors.white,
-    height: 50,
-    child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          InkWell(
-            onTap: () {},
-            child: Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text(
-                'All',
-                style: TextStyle(
-                  fontSize: 16.0,
-                ),
-              ),
-            ),
-          ),
-          Container(
-            color: Colors.black,
-            width: 1,
-          ),
-          InkWell(
-            onTap: () {},
-            child: Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text(
-                'Active',
-                style: TextStyle(
-                  fontSize: 16.0,
-                ),
-              ),
-            ),
-          ),
-          Container(
-            color: Colors.black,
-            width: 1,
-          ),
-          InkWell(
-            onTap: () {},
-            child: Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text(
-                'Pending',
-                style: TextStyle(
-                  fontSize: 16.0,
-                ),
-              ),
-            ),
-          ),
-          Container(
-            color: Colors.black,
-            width: 1,
-          ),
-          InkWell(
-            onTap: () {},
-            child: Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text(
-                'Rejected',
-                style: TextStyle(
-                  fontSize: 16.0,
-                ),
-              ),
-            ),
-          ),
-        ]),
-  );
+class AllTabView extends StatelessWidget {
+  final VoidCallback? onPressed;
+  const AllTabView({Key? key, this.onPressed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            .doc(Prefs.instance.getLoginUserId() ?? '3123456789123')
+            .collection('contract')
+            .snapshots(),
+        builder: (context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>?>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data == null) {
+              return Center(child: Text("No data Found"));
+            }
+            if (snapshot.hasError) {
+              return Text("Something error");
+            }
+          }
+          if (snapshot.hasData && snapshot.data != null) {
+            if (snapshot.data!.docs.isEmpty) {
+              return Center(child: Text("No Contract"));
+            }
+            return GridView.count(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
+              childAspectRatio: 2 / 3,
+              crossAxisCount: 2,
+              children: snapshot.data!.docs.map((DocumentSnapshot element) {
+                Map<String, dynamic> mydata =
+                    element.data()! as Map<String, dynamic>;
+                print(mydata);
+                final e = ContractModel.fromJson(mydata);
+                return GeneralHomeCard(
+                    contractModelData: e, onPressed: onPressed);
+              }).toList(),
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        });
+  }
 }
 
-bottomBarWidget() {
-  return Container(
-    color: Colors.grey[300],
-    height: 50,
-    child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          FlatButton(
-            padding: EdgeInsets.all(10.0),
-            onPressed: () {},
-            child: Icon(
-              Icons.notifications,
-              size: 30.0,
-            ),
+class GeneralHomeCard extends StatelessWidget {
+  final ContractModel contractModelData;
+  final VoidCallback? onPressed;
+  const GeneralHomeCard(
+      {Key? key, required this.contractModelData, this.onPressed})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                contractModelData.contractName,
+                style:
+                    GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 5),
+              Text(contractModelData.contractDetail?.executionDate.toString() ??
+                  ''),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                      child: CircleAvatar(child: Icon(Icons.abc_outlined))),
+                  SizedBox(width: 20),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        contractModelData.status,
+                        style: TextStyle(overflow: TextOverflow.ellipsis),
+                      ),
+                      decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                  )
+                ],
+              ),
+            ],
           ),
-          Container(
-            color: Colors.black,
-            width: 1,
-          ),
-          FlatButton(
-            padding: EdgeInsets.all(10.0),
-            onPressed: () {},
-            child: Icon(
-              Icons.home,
-              size: 30.0,
-            ),
-          ),
-          Container(
-            color: Colors.black,
-            width: 1,
-          ),
-          FlatButton(
-            padding: EdgeInsets.all(10.0),
-            onPressed: () {},
-            child: Icon(
-              Icons.settings,
-              size: 30.0,
-            ),
-          )
-        ]),
-  );
+        ),
+      ),
+    );
+  }
 }
+
+class TabDraftView extends StatelessWidget {
+  const TabDraftView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            .doc(Prefs.instance.getLoginUserId() ?? '3123456789123')
+            .collection('contract')
+            .where('status', isEqualTo: 'Pending')
+            .snapshots(),
+        builder: (context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>?>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data == null) {
+              return Center(child: Text("No data Found"));
+            }
+            if (snapshot.hasError) {
+              return Text("Something error");
+            }
+          }
+          if (snapshot.hasData && snapshot.data != null) {
+            if (snapshot.data!.docs.isEmpty) {
+              return Center(child: Text("No Contract"));
+            }
+            return GridView.count(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
+              childAspectRatio: 2 / 3,
+              crossAxisCount: 2,
+              children: snapshot.data!.docs.map((DocumentSnapshot element) {
+                Map<String, dynamic> mydata =
+                    element.data()! as Map<String, dynamic>;
+                print(mydata);
+                final e = ContractModel.fromJson(mydata);
+                return GeneralHomeCard(
+                  contractModelData: e,
+                  onPressed: () async {
+                    context.read<PromiseProvider>().setContractPref(e);
+                    context.read<PromiseProvider>().promiseClear = false;
+                    if (e.savedPlace == PromiseAgreement.routeName) {
+                      Navigator.pushNamed(context, PromiseAgreement.routeName);
+                    } else if (e.savedPlace == TimeLineScreen.routeName) {
+                      Navigator.pushNamed(context, PromiseAgreement.routeName);
+                      Navigator.pushNamed(context, TimeLineScreen.routeName);
+                    } else if (e.savedPlace == AdditionalScreen.routeName) {
+                      Navigator.pushNamed(context, PromiseAgreement.routeName);
+                      Navigator.pushNamed(context, TimeLineScreen.routeName);
+                      Navigator.pushNamed(context, AdditionalScreen.routeName);
+                    } else if (e.savedPlace == PenaltiesScreen.routeName) {
+                      Navigator.pushNamed(context, PromiseAgreement.routeName);
+                      Navigator.pushNamed(context, TimeLineScreen.routeName);
+                      Navigator.pushNamed(context, AdditionalScreen.routeName);
+                      Navigator.pushNamed(context, PenaltiesScreen.routeName);
+                    }
+                  },
+                );
+              }).toList(),
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        });
+  }
+}
+
+// class CustomCardAllUi extends StatelessWidget {
+//   const CustomCardAllUi({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final provider = context.read<PromiseProvider>().contracts;
+//     return GridView.count(
+//         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+//         mainAxisSpacing: 5,
+//         crossAxisSpacing: 5,
+//         childAspectRatio: 2 / 3,
+//         crossAxisCount: 2,
+//         children: provider
+//             .map((e) => GeneralHomeCard(contractModelData: e))
+//             .toList());
+//   }
+// }

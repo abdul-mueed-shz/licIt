@@ -96,8 +96,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               iconData: Icons.edit,
               title: "Signature",
               onTap: (context) async {
-                final image = await Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SignatureBoard()));
+                final image = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignatureBoard()));
                 setState(() {
                   signatureImageFile = image;
                 });
@@ -317,7 +319,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (checkValidation == 'User Exist') {
         EasyLoading.dismiss();
         setState(() {
-          isLoading=false;
+          isLoading = false;
         });
         EasyLoading.showError("User is Already exist");
 

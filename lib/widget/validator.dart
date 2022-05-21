@@ -48,4 +48,9 @@ class Validator {
     if (value.length <= 7) return 'password Minimum length is 8';
     return null;
   }
+
+  static String? basicValidator(String? value) {
+    if (value == null || value.isEmpty) return 'Enter a required value';
+    return null;
+  }
 }

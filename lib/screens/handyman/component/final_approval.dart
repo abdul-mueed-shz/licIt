@@ -1,0 +1,98 @@
+import 'package:flutter/material.dart';
+import 'package:fyp/screens/handyman/component/compensation.dart';
+import 'package:fyp/screens/handyman/component/project_title.dart';
+import 'package:fyp/screens/promise_agreement/component/time_line.dart';
+import 'package:fyp/screens/rental/rental_agreement.dart';
+import 'package:fyp/util/constant.dart';
+import 'package:fyp/widget/button.dart';
+import 'package:fyp/widget/common_widget.dart';
+import 'package:fyp/widget/validator.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class FinalApproval extends StatefulWidget {
+  final String title;
+  const FinalApproval({required this.title,Key? key}) : super(key: key);
+
+  @override
+  State<FinalApproval> createState() => _FinalApprovalState();
+}
+
+class _FinalApprovalState extends State<FinalApproval> {
+  final finalApprovalController = TextEditingController();
+
+  final key = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    finalApprovalController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Form(
+      key: key,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 40.0, left: 20, right: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.title,
+              style: GoogleFonts.lato(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 30),
+            TitleWithTextField(
+                controller: finalApprovalController,
+                title: 'e.g fence should be painted in red',
+                text: 'Describe how final Approval of the work is to be determined:',
+                validator: Validator.basicValidator),
+            const SizedBox(height: 10),
+
+            const Spacer(),
+            Row(
+              children: [
+                Expanded(
+                  child: DeleteBacKFunctionality(
+                      iconData: Icons.keyboard_backspace, onTap: _deleteTap),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  flex: 5,
+                  child: MyElevatedButton(
+                    'Next',
+                    onTap: (_) {
+                      if (key.currentState!.validate()) {
+                        final data = finalApprovalController.text;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const Compensation()));
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: DeleteBacKFunctionality(
+                      iconData: Icons.delete, onTap: _deleteTap),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _deleteTap(BuildContext context) {
+    Navigator.of(context).pop();
+  }
+}
+
+

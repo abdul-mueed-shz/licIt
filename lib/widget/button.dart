@@ -6,7 +6,7 @@ class MyElevatedButton extends StatelessWidget {
   final BuildContextCallback onTap;
   final String title;
   final Color color;
-  final double width;
+  final double? width;
   final double height;
   final Color titleColor;
   final EdgeInsetsGeometry margin;

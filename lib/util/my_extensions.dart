@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/widget/text_widgets.dart';
+import 'package:intl/intl.dart';
 
 extension StringExtension on String {
   MyText toText({
@@ -28,4 +29,18 @@ extension StringExtension on String {
       overflow: overflow,
     );
   }
+
+  String dateWithFormat(String format) =>
+      DateFormat(format).format(DateTime.parse(this));
+  String get formattedDate => DateFormat.yMMMd().format(DateTime.parse(this));
+  String get formattedTime => DateFormat.jm().format(DateTime.parse(this));
+}
+
+extension DateTimeExtension on DateTime {
+  DateTime applyDate(DateTime date) =>
+      DateTime(date.year, date.month, date.day, hour, minute);
+  DateTime applyTime(TimeOfDay time) =>
+      DateTime(year, month, day, time.hour, time.minute);
+  TimeOfDay get timeDay => TimeOfDay(hour: hour, minute: minute);
+  DateTime get dateOnly => DateTime(year, month, day);
 }

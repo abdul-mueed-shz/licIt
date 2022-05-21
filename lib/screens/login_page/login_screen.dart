@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/screens/forgot_password/forgot_password.dart';
-import 'package:fyp/screens/home_screen/home_screen.dart';
 import 'package:fyp/screens/signup_screen/signup_screen.dart';
+import 'package:fyp/screens/tab/tab_screen.dart';
+import 'package:fyp/util/pref.dart';
 import 'package:fyp/widget/common_widget.dart';
 import 'package:fyp/widget/validator.dart';
 
@@ -204,8 +205,8 @@ class _LoginScreenState extends State<LoginScreen> {
         final data = Crypt(password).match(passwordController.text.trim());
 
         if (cnic == cnicController.text.trim() && data) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const HomePage()));
+          Prefs.instance.setId(cnic);
+          Navigator.pushReplacementNamed(context, TabScreen.routeName);
           cnicController.clear();
           passwordController.clear();
         } else {

@@ -32,11 +32,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   final cnic = Prefs.instance.getLoginUserId();
   Color greenColor = const Color(0xFF00AF19);
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
@@ -62,6 +57,7 @@ class _HomePageState extends State<HomePage> {
                   color: greenColor,
                 ),
                 onPressed: () {
+                  Prefs.instance.allClear();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
                 },
@@ -238,7 +234,9 @@ class TabDraftView extends StatelessWidget {
                 return GeneralHomeCard(
                   contractModelData: e,
                   onPressed: () async {
+                    Prefs.instance.removeUser();
                     context.read<PromiseProvider>().setContractPref(e);
+                    Prefs.instance.setContract(e);
                     context.read<PromiseProvider>().promiseClear = false;
                     if (e.savedPlace == PromiseAgreement.routeName) {
                       Navigator.pushNamed(context, PromiseAgreement.routeName);

@@ -100,10 +100,11 @@ class PromiseProvider with ChangeNotifier {
     };
     await contractRepository.update(id, updateData);
     final contract = await contractRepository.get(id);
+
     if (contract != null) {
       Prefs.instance.setContract(contract);
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   void updateTimeLineField() async {
@@ -159,7 +160,7 @@ class PromiseProvider with ChangeNotifier {
     if (selectedAdditionalRadioValue == 'Yes') {
       conditionController.text =
           pref?.contractDetail?.additionalCondition ?? '';
-    } else {
+    } else if (selectedAdditionalRadioValue == 'No') {
       conditionController.clear();
     }
   }
@@ -168,12 +169,16 @@ class PromiseProvider with ChangeNotifier {
     final pref = Prefs.instance.contract;
     final contract = pref?.contractDetail;
     selectedTimeLineRadioValue = contract?.isCompletionRadio;
+    print("-------------------------------------------");
+    print(Prefs.instance.contract?.contractDetail?.isCompletionRadio);
+    print(selectedTimeLineRadioValue);
+    print("-------------------------------------------");
+    selectedStartDate = DateTime.parse(contract?.executionDate ?? '');
     if (selectedTimeLineRadioValue == 'No') {
       selectedEndDate = DateTime.parse(contract?.endDate ?? '');
-    } else {
+    } else if (selectedTimeLineRadioValue == 'Yes') {
       selectedEndDate = null;
     }
-    selectedStartDate = DateTime.parse(contract?.executionDate ?? '');
   }
 
   void updatePenaltyField() async {
@@ -198,6 +203,11 @@ class PromiseProvider with ChangeNotifier {
     await contractRepository.update(contract?.id ?? '', updateBody);
     final model = await contractRepository
         .get(Prefs.instance.getLoginUserId() ?? '3123456789123');
+    print("-----------------------------------------------------");
+    print(model?.contractDetail?.isCompletionRadio);
+    print(model?.contractDetail?.executionDate);
+    print(model?.contractDetail?.endDate);
+    print("-----------------------------------------------------");
     print(model?.contractDetail?.additionalConditionsRadio);
     if (model != null) {
       Prefs.instance.setContract(model);

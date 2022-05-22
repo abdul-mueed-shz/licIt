@@ -39,4 +39,5 @@ class Prefs {
   }
 
   Future<bool> removeUser() => _prefs.remove(_keyContract);
+  Future<void> allClear() => _prefs.clear();
 }

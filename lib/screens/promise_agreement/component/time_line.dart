@@ -21,8 +21,7 @@ class TimeLineScreen extends StatefulWidget {
 
 class _TimeLineScreenState extends State<TimeLineScreen> {
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
     final provider = Provider.of<PromiseProvider>(context, listen: false);
     final pref = Prefs.instance.contract;
     if (pref?.contractDetail?.executionDate != null &&
@@ -60,20 +59,15 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
                   delay: 300,
                   value: provider.selectedTimeLineRadioValue,
                   radioList: const ['Yes', 'No']),
-              Selector<PromiseProvider, String?>(
-                selector: (context, provider) =>
-                    provider.selectedTimeLineRadioValue,
-                builder: (context, value, child) {
-                  return value != null && value == 'No'
-                      ? DateTimeField(
-                          onDateTimeChanged: provider.onSelectedEndChanged,
-                          title: 'End Date of Completion',
-                          defaultValue: provider.selectedEndDate,
-                          delay: 300,
-                        )
-                      : const SizedBox();
-                },
-              ),
+              provider.selectedTimeLineRadioValue != null &&
+                      provider.selectedTimeLineRadioValue == 'No'
+                  ? DateTimeField(
+                      onDateTimeChanged: provider.onSelectedEndChanged,
+                      title: 'End Date of Completion',
+                      defaultValue: provider.selectedEndDate,
+                      delay: 300,
+                    )
+                  : const SizedBox(),
               const Spacer(),
               Row(
                 children: [

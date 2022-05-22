@@ -23,7 +23,7 @@ class PromiseAgreement extends StatefulWidget {
 class _PromiseAgreementState extends State<PromiseAgreement> {
   @override
   void initState() {
-    final provider = context.read<PromiseProvider>();
+    final provider = Provider.of<PromiseProvider>(context, listen: false);
     final contractModel = Prefs.instance.contract;
 
     if (contractModel != null &&

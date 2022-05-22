@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp/model/contract_model.dart';
 import 'package:fyp/screens/promise_agreement/component/time_line.dart';
 import 'package:fyp/screens/promise_agreement/promise_provider.dart';
 import 'package:fyp/util/constant.dart';
@@ -26,13 +27,8 @@ class _PromiseAgreementState extends State<PromiseAgreement> {
     final provider = Provider.of<PromiseProvider>(context, listen: false);
     final contractModel = Prefs.instance.contract;
 
-    if (contractModel != null &&
-        contractModel.id.isNotEmpty &&
-        !provider.promiseClear) {
+    if (contractModel != null && contractModel.id.isNotEmpty) {
       provider.setPromiseValueDefault();
-    }
-    if (provider.promiseClear) {
-      provider.clearAllValue();
     }
 
     super.initState();
@@ -90,18 +86,25 @@ class _PromiseAgreementState extends State<PromiseAgreement> {
                     'Next',
                     onTap: (_) async {
                       if (key.currentState!.validate()) {
-                        final pref = Prefs.instance.contract;
-                        if (pref?.contractDetail?.isCompletionRadio == null &&
-                            pref?.contractDetail?.executionDate == null) {
-                          final provider = context.read<PromiseProvider>();
-                          provider.timeLineClear = false;
-                          provider.clearTimeLineField();
-                        }
-                        context.read<PromiseProvider>().addPromiseAgreementData(
+                        ContractModel? contract = Prefs.instance.contract;
+                        contract = await provider.addPromiseAgreementData(
                             widget.title,
                             TimeLineScreen.routeName,
                             Status.pending.value);
-                        Navigator.pushNamed(context, TimeLineScreen.routeName);
+                        final pref = Prefs.instance.contract;
+                        if (contract != null) {
+                          if (pref?.contractDetail?.isCompletionRadio == null &&
+                              pref?.contractDetail?.executionDate == null) {
+                            provider.clearTimeLineField();
+                          }
+                          if (pref?.id != null &&
+                              pref?.contractDetail?.executionDate != null &&
+                              pref?.contractDetail?.isCompletionRadio != null) {
+                            provider.setTimeLineUpdate();
+                          }
+                          Navigator.pushNamed(
+                              context, TimeLineScreen.routeName);
+                        }
                       }
                     },
                   ),

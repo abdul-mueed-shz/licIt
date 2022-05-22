@@ -36,8 +36,8 @@ class AgreementScreen extends StatelessWidget {
           ),
           const Spacer(),
           MyElevatedButton('Next Button', onTap: (_) {
-            context.read<PromiseProvider>().promiseClear = true;
             Prefs.instance.removeUser();
+            context.read<PromiseProvider>().clearAllData();
             Navigator.pushNamed(context, modal.routeName,
                 arguments: modal.name);
           }),

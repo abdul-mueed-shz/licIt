@@ -9,10 +9,6 @@ import 'package:uuid/uuid.dart';
 
 class PromiseProvider with ChangeNotifier {
   DateTime? selectedStartDate;
-  bool promiseClear = false;
-  bool timeLineClear = false;
-  bool additionalClear = false;
-  bool penaltyClear = false;
   DateTime? selectedEndDate;
   String? selectedTimeLineRadioValue;
   String? selectedAdditionalRadioValue;
@@ -36,6 +32,7 @@ class PromiseProvider with ChangeNotifier {
     nameController.clear();
     myselfController.clear();
     healthyController.clear();
+    notifyListeners();
   }
 
   void onSelectedStartChanged(DateTime? dateTime) {
@@ -68,12 +65,13 @@ class PromiseProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addPromiseAgreementData(
+  Future<ContractModel?> addPromiseAgreementData(
       String title, String savedLocation, String status) async {
-    final contractModel = Prefs.instance.contract;
+    ContractModel? contractModelDataId = Prefs.instance.contract;
 
-    final id = contractModel?.id != null ? contractModel!.id : uuid.v4();
-    if (contractModel?.id == null) {
+    final id =
+        contractModelDataId?.id != null ? contractModelDataId!.id : uuid.v4();
+    if (contractModelDataId?.id == null) {
       final contract = ContractModel(
           id: id,
           contractName: title,
@@ -88,7 +86,7 @@ class PromiseProvider with ChangeNotifier {
       await contractRepository.add(contract);
       Prefs.instance.setContract(contract);
       notifyListeners();
-      return;
+      return contract;
     }
     final updateData = {
       'id': id,
@@ -99,12 +97,12 @@ class PromiseProvider with ChangeNotifier {
       'contractDetail.reason': healthyController.text.trim(),
     };
     await contractRepository.update(id, updateData);
-    final contract = await contractRepository.get(id);
-
-    if (contract != null) {
-      Prefs.instance.setContract(contract);
-      notifyListeners();
+    final dataGet = await contractRepository.get(id);
+    if (dataGet != null) {
+      Prefs.instance.setContract(dataGet);
+      return dataGet;
     }
+    return null;
   }
 
   void updateTimeLineField() async {
@@ -151,6 +149,7 @@ class PromiseProvider with ChangeNotifier {
     selectedTimeLineRadioValue = null;
     selectedEndDate = null;
     selectedStartDate = null;
+    notifyListeners();
   }
 
   void setAdditionalValue() {
@@ -163,22 +162,20 @@ class PromiseProvider with ChangeNotifier {
     } else if (selectedAdditionalRadioValue == 'No') {
       conditionController.clear();
     }
+    notifyListeners();
   }
 
   void setTimeLineUpdate() {
     final pref = Prefs.instance.contract;
     final contract = pref?.contractDetail;
     selectedTimeLineRadioValue = contract?.isCompletionRadio;
-    print("-------------------------------------------");
-    print(Prefs.instance.contract?.contractDetail?.isCompletionRadio);
-    print(selectedTimeLineRadioValue);
-    print("-------------------------------------------");
     selectedStartDate = DateTime.parse(contract?.executionDate ?? '');
     if (selectedTimeLineRadioValue == 'No') {
       selectedEndDate = DateTime.parse(contract?.endDate ?? '');
     } else if (selectedTimeLineRadioValue == 'Yes') {
       selectedEndDate = null;
     }
+    notifyListeners();
   }
 
   void updatePenaltyField() async {
@@ -203,15 +200,24 @@ class PromiseProvider with ChangeNotifier {
     await contractRepository.update(contract?.id ?? '', updateBody);
     final model = await contractRepository
         .get(Prefs.instance.getLoginUserId() ?? '3123456789123');
-    print("-----------------------------------------------------");
-    print(model?.contractDetail?.isCompletionRadio);
-    print(model?.contractDetail?.executionDate);
-    print(model?.contractDetail?.endDate);
-    print("-----------------------------------------------------");
-    print(model?.contractDetail?.additionalConditionsRadio);
     if (model != null) {
       Prefs.instance.setContract(model);
     }
+    notifyListeners();
+  }
+
+  void clearAllData() {
+    selectedStartDate = null;
+    selectedEndDate = null;
+    selectedTimeLineRadioValue = null;
+    selectedAdditionalRadioValue = null;
+    selectedPenaltiesRadioValue = null;
+    nameController.clear();
+    myselfController.clear();
+    healthyController.clear();
+    conditionController.clear();
+    penaltyController.clear();
+    haveController.clear();
     notifyListeners();
   }
 }

@@ -21,26 +21,6 @@ class AdditionalScreen extends StatefulWidget {
 
 class _AdditionalScreenState extends State<AdditionalScreen> {
   @override
-  void initState() {
-    super.initState();
-    final provider = context.read<PromiseProvider>();
-    final pref = Prefs.instance.contract;
-    if (pref?.contractDetail?.additionalConditionsRadio != null) {
-      provider.additionalClear = true;
-    }
-    if (pref?.id != null &&
-        pref?.contractDetail?.additionalConditionsRadio != null &&
-        provider.additionalClear) {
-      provider.setAdditionalValue();
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Consumer<PromiseProvider>(
       builder: (context, provider, child) {
@@ -99,7 +79,6 @@ class _AdditionalScreenState extends State<AdditionalScreen> {
 
   void _tap(BuildContext context) async {
     final provider = context.read<PromiseProvider>();
-    final pref = Prefs.instance.contract;
 
     if (provider.selectedAdditionalRadioValue == null) {
       return EasyLoading.showError("Please Fill all field");
@@ -110,11 +89,15 @@ class _AdditionalScreenState extends State<AdditionalScreen> {
     }
 
     provider.addAdditionalScreenField();
-    if (pref?.contractDetail?.violateContractRadio == null &&
-        !provider.penaltyClear) {
+    final pref = Prefs.instance.contract;
+
+    if (pref?.contractDetail?.violateContractRadio == null) {
       provider.haveController.clear();
       provider.haveController.clear();
       provider.selectedPenaltiesRadioValue = null;
+    }
+    if (pref?.contractDetail?.violateContractRadio != null) {
+      provider.setPromiseValueDefault();
     }
 
     Navigator.push(

@@ -237,7 +237,6 @@ class TabDraftView extends StatelessWidget {
                     Prefs.instance.removeUser();
                     context.read<PromiseProvider>().setContractPref(e);
                     Prefs.instance.setContract(e);
-                    context.read<PromiseProvider>().promiseClear = false;
                     if (e.savedPlace == PromiseAgreement.routeName) {
                       Navigator.pushNamed(context, PromiseAgreement.routeName);
                     } else if (e.savedPlace == TimeLineScreen.routeName) {

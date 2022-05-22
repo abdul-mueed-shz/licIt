@@ -21,24 +21,6 @@ class TimeLineScreen extends StatefulWidget {
 
 class _TimeLineScreenState extends State<TimeLineScreen> {
   @override
-  void initState() {
-    super.initState();
-
-    final provider = Provider.of<PromiseProvider>(context, listen: false);
-    final pref = Prefs.instance.contract;
-    if (pref?.contractDetail?.executionDate != null &&
-        pref?.contractDetail?.isCompletionRadio != null) {
-      provider.timeLineClear = true;
-    }
-    if (pref?.id != null &&
-        pref?.contractDetail?.executionDate != null &&
-        pref?.contractDetail?.isCompletionRadio != null &&
-        provider.timeLineClear) {
-      provider.setTimeLineUpdate();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 40, left: 20, right: 20),
@@ -108,19 +90,17 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
         provider.selectedEndDate == null) {
       return EasyLoading.showError("Please Select End Date");
     }
+    provider.updateTimeLineField();
 
     final pref = Prefs.instance.contract;
     if (pref?.contractDetail?.additionalConditionsRadio == null &&
         pref?.contractDetail?.additionalCondition == null) {
-      provider.additionalClear = false;
-      provider.selectedAdditionalRadioValue = null;
-      provider.conditionController.text = '';
-    }
-    context.read<PromiseProvider>().updateTimeLineField();
-    if (pref?.contractDetail?.additionalCondition == null &&
-        !provider.additionalClear) {
       provider.selectedAdditionalRadioValue = null;
       provider.conditionController.clear();
+    }
+    if (pref?.id != null &&
+        pref?.contractDetail?.additionalConditionsRadio != null) {
+      provider.setAdditionalValue();
     }
     Navigator.push(
         context, MaterialPageRoute(builder: (_) => const AdditionalScreen()));

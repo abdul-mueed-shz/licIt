@@ -21,7 +21,9 @@ class TimeLineScreen extends StatefulWidget {
 
 class _TimeLineScreenState extends State<TimeLineScreen> {
   @override
-  void didChangeDependencies() {
+  void initState() {
+    super.initState();
+
     final provider = Provider.of<PromiseProvider>(context, listen: false);
     final pref = Prefs.instance.contract;
     if (pref?.contractDetail?.executionDate != null &&

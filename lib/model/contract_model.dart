@@ -11,6 +11,21 @@ class ContractModel {
   final String? state;
   final String status;
   final String savedPlace;
+  final String? contractStartDate;
+  final String? contractEndDate;
+  final String? userNameFrom;
+  final String? userNameTo;
+  final String? userAddressFrom;
+  final String? userAddressTo;
+  final String? userLocalityTo;
+  final String? userLocalityFrom;
+  final String? userCityFrom;
+  final String? userProvinceFrom;
+  final String? userCountryFrom;
+  final String? userCityTo;
+  final String? userProvinceTo;
+  final String? userCountryTo;
+
   final ContractDetail? contractDetail;
   static String getId() {
     return Prefs.instance.getLoginUserId() ?? '3123456789123';
@@ -24,6 +39,20 @@ class ContractModel {
     required this.status,
     this.state,
     this.contractDetail,
+    this.contractStartDate,
+    this.contractEndDate,
+    this.userNameFrom,
+    this.userNameTo,
+    this.userAddressFrom,
+    this.userAddressTo,
+    this.userLocalityTo,
+    this.userLocalityFrom,
+    this.userCityFrom,
+    this.userProvinceFrom,
+    this.userCountryFrom,
+    this.userCityTo,
+    this.userProvinceTo,
+    this.userCountryTo,
   });
   factory ContractModel.fromJson(Map<String, dynamic> json) =>
       _$ContractModelFromJson(json);

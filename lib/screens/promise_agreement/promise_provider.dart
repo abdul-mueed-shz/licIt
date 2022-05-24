@@ -13,12 +13,30 @@ class PromiseProvider with ChangeNotifier {
   String? selectedTimeLineRadioValue;
   String? selectedAdditionalRadioValue;
   String? selectedPenaltiesRadioValue;
+  DateTime? selectedStartDateTemplate;
+
   final nameController = TextEditingController();
   final myselfController = TextEditingController();
   final healthyController = TextEditingController();
   final conditionController = TextEditingController();
   final penaltyController = TextEditingController();
   final haveController = TextEditingController();
+
+  final templateUserNameFrom = TextEditingController();
+  final templateNameUserTo = TextEditingController();
+  final templateUserAddressFrom = TextEditingController();
+  final templateUserAddressTo = TextEditingController();
+  final templateUserLocalityTo = TextEditingController();
+  final templateUserLocalityFrom = TextEditingController();
+  final templateUserCityFrom = TextEditingController();
+  final templateUserCityTo = TextEditingController();
+  final templateUserProvinceTo = TextEditingController();
+  final templateUserProvinceFrom = TextEditingController();
+  final templateUserCountryFrom = TextEditingController();
+  final templateUserCountryTo = TextEditingController();
+  final templateUserEndDate = TextEditingController();
+  final templateUserEndYear = TextEditingController();
+
   final uuid = const Uuid();
 
   void setPromiseValueDefault() {
@@ -37,6 +55,11 @@ class PromiseProvider with ChangeNotifier {
 
   void onSelectedStartChanged(DateTime? dateTime) {
     selectedStartDate = dateTime;
+    notifyListeners();
+  }
+
+  void onStartTemplateSelectedDate(DateTime? dateTime) {
+    selectedStartDateTemplate = dateTime;
     notifyListeners();
   }
 

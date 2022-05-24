@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
+import 'package:fyp/screens/general_template/general_template_dart.dart';
 import 'package:fyp/screens/handyman/handyman_provider.dart';
-import 'package:fyp/screens/login_page/login_screen.dart';
 import 'package:fyp/screens/promise_agreement/promise_provider.dart';
 import 'package:fyp/screens/rental/rental_provider.dart';
 import 'package:fyp/util/pref.dart';
@@ -29,7 +29,7 @@ void main() async {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: LoginScreen.routeName,
+        initialRoute: GeneralTemplate.routeName,
         routes: routes,
         builder: (context, widget) {
           return MediaQuery(

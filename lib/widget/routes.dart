@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp/contract_screen/contract_screen.dart';
 import 'package:fyp/screens/agreement_screen/agreemenet_screen.dart';
 import 'package:fyp/screens/forgot_password/forgot_password.dart';
+import 'package:fyp/screens/general_template/general_template_dart.dart';
 import 'package:fyp/screens/handyman/houehold_screeen.dart';
 import 'package:fyp/screens/home_screen/home_screen.dart';
 import 'package:fyp/screens/login_page/login_screen.dart';
@@ -27,4 +28,5 @@ final Map<String, WidgetBuilder> routes = {
   AdditionalScreen.routeName: (context) => const AdditionalScreen(),
   PenaltiesScreen.routeName: (context) => const PenaltiesScreen(),
   HouseHoldScreen.routeName: (context) => const HouseHoldScreen(),
+  GeneralTemplate.routeName: (context) => const GeneralTemplate(),
 };

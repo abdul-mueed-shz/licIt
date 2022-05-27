@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ErrorHandler {
-  Future errorDialogue(BuildContext context, e) {
+  static Future errorDialogue(BuildContext context, e) {
     return showCupertinoDialog(
         context: context,
         builder: (context) {
@@ -12,7 +12,7 @@ class ErrorHandler {
                 20,
               ),
             ),
-            title: Text('Error'),
+            title: const Text('Error'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -26,7 +26,7 @@ class ErrorHandler {
                   child: Center(
                     child: Text(
                       e.toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 20,
                       ),
                     ),
@@ -40,7 +40,7 @@ class ErrorHandler {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('OK'),
+                        child: const Text('OK'),
                       )
                     ],
                   ),

@@ -12,6 +12,7 @@ class LocalUser {
   final String? token;
   final String? cnicImageUrl;
   final String? signatureImage;
+  final List<String> allContractId;
 
   LocalUser(
       {required this.name,
@@ -19,6 +20,7 @@ class LocalUser {
       required this.phoneNumber,
       required this.email,
       this.token,
+      this.allContractId = const [],
       required this.password,
       this.cnicImageUrl,
       this.signatureImage});

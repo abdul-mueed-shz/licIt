@@ -103,6 +103,7 @@ class PromiseProvider with ChangeNotifier {
             reason: healthyController.text.trim(),
           ));
       await contractRepository.add(contract);
+
       setContractPref(contract);
     }
     final updateData = {

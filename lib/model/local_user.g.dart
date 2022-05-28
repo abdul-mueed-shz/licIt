@@ -12,6 +12,10 @@ LocalUser _$LocalUserFromJson(Map<String, dynamic> json) => LocalUser(
       phoneNumber: json['phoneNumber'] as String,
       email: json['email'] as String,
       token: json['token'] as String?,
+      allContractId: (json['allContractId'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       password: json['password'] as String,
       cnicImageUrl: json['cnicImageUrl'] as String?,
       signatureImage: json['signatureImage'] as String?,
@@ -26,4 +30,5 @@ Map<String, dynamic> _$LocalUserToJson(LocalUser instance) => <String, dynamic>{
       'token': instance.token,
       'cnicImageUrl': instance.cnicImageUrl,
       'signatureImage': instance.signatureImage,
+      'allContractId': instance.allContractId,
     };

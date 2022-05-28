@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/model/local_user.dart';
+import 'package:fyp/widget/button.dart';
 
 class SearchScreen extends StatefulWidget {
   static const String routeName = '/searchScreen';
@@ -15,6 +16,7 @@ class _SearchScreenState extends State<SearchScreen> {
   String? currentUserCnic = storage.id;
   List<LocalUser> searchlist = [];
   LocalUser? targetUser;
+  bool isTextFieldFilled = false;
 
   void _onTapSettingsIcon(
       BuildContext context, TextEditingController controller) {
@@ -48,8 +50,10 @@ class _SearchScreenState extends State<SearchScreen> {
             Autocomplete(
               optionsBuilder: (TextEditingValue textEditingValue) {
                 if (textEditingValue.text.isEmpty) {
+                  setState(() => isTextFieldFilled = false);
                   return const Iterable<String>.empty();
                 } else {
+                  setState(() => isTextFieldFilled = true);
                   return searchlist.where((user) => (user.name)
                       .toLowerCase()
                       .contains(textEditingValue.text.toLowerCase()));
@@ -83,7 +87,9 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                         title: Text(name),
                         onTap: () {
+                          targetUser = userData.elementAt(index) as LocalUser;
                           onSelected(targetUser!.cnicNo);
+                          setState(() => isTextFieldFilled = true);
                         },
                       ),
                     );
@@ -131,10 +137,28 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 );
               },
-            )
+            ),
+            myButton()
           ],
         ),
       ),
     );
+  }
+
+  Widget myButton() {
+    print(storage.contract?.id);
+    if (isTextFieldFilled) {
+      return MyElevatedButton('Send For Review',
+          onTap: sendForReview,
+          margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 50));
+    } else {
+      return const SizedBox();
+    }
+  }
+
+  void sendForReview(BuildContext context) async {
+    await contractRepository.update(storage.contract!.id, {
+      'status': 'Review',
+    });
   }
 }

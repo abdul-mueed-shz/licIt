@@ -9,6 +9,7 @@ import 'package:fyp/screens/promise_agreement/component/additional_screen.dart';
 import 'package:fyp/screens/promise_agreement/component/penalties_screen.dart';
 import 'package:fyp/screens/promise_agreement/component/time_line.dart';
 import 'package:fyp/screens/promise_agreement/promise_agreement.dart';
+import 'package:fyp/screens/review_template_screen/review_template_dart.dart';
 import 'package:fyp/util/constant.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -79,7 +80,7 @@ class _HomePageState extends State<HomePage> {
         body: TabBarView(
           children: [
             AllTabView(onPressed: (_) {}),
-            Center(child: Text('Active')),
+            ReviewView(),
             TabDraftView(),
             Center(child: Text('Pending')),
             Center(child: Text('Rejected')),
@@ -259,5 +260,75 @@ class TabDraftView extends StatelessWidget {
       Navigator.pushNamed(context, AdditionalScreen.routeName);
       Navigator.pushNamed(context, PenaltiesScreen.routeName);
     }
+  }
+}
+
+class ReviewView extends StatelessWidget {
+  const ReviewView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
+        stream: FirebaseFirestore.instance
+            .collection("users")
+            .doc(storage.id ?? '3123456789123')
+            .collection('contract')
+            .where('status', isEqualTo: 'Review')
+            .snapshots(),
+        builder: (context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>?>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.data == null) {
+              return Center(child: Text("No data Found"));
+            }
+            if (snapshot.hasError) {
+              return Text("Something error");
+            }
+          }
+          if (snapshot.hasData && snapshot.data != null) {
+            if (snapshot.data!.docs.isEmpty) {
+              return Center(child: Text("No Review Contract"));
+            }
+            return GridView.count(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
+              childAspectRatio: 2 / 3,
+              crossAxisCount: 2,
+              children: snapshot.data!.docs.map((DocumentSnapshot element) {
+                Map<String, dynamic> mydata =
+                    element.data()! as Map<String, dynamic>;
+                final e = ContractModel.fromJson(mydata);
+
+                return GeneralHomeCard(
+                  contractModelData: e,
+                  onPressed: (context) => _ReviewPressed(context, e),
+                );
+              }).toList(),
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        });
+  }
+
+  void _ReviewPressed(BuildContext context, ContractModel e) async {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ReviewTemplateScreen(
+                startDate: e.contractStartDate ?? '',
+                endDate: e.contractEndDate ?? '',
+                userNameFrom: e.userNameFrom ?? '',
+                userNameTo: e.userNameTo ?? '',
+                userAddressFrom: e.userAddressFrom ?? '',
+                userAddressTo: e.userAddressTo ?? '',
+                userCityFrom: e.userCityFrom ?? '',
+                userCityTo: e.userCityTo ?? '',
+                userCountryFrom: e.userCountryFrom ?? '',
+                userCountryTo: e.userCountryTo ?? '',
+                userLocalityFrom: e.userLocalityFrom ?? '',
+                userLocalityTo: e.userLocalityTo ?? '',
+                userProvinceFrom: e.userProvinceFrom ?? '',
+                userProvinceTo: e.userProvinceTo ?? '')));
   }
 }

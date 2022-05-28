@@ -211,12 +211,6 @@ class _LoginScreenState extends State<LoginScreen> {
           final update = {
             'token': token,
           };
-
-          // final pushToken = await context
-          //     .read<PromiseProvider>()
-          //     .getDeviceTokenToSendNotification();
-          // context.read<PromiseProvider>().send(pushToken);
-
           await userRepository.update(cnic, update);
           Navigator.pushReplacementNamed(context, TabScreen.routeName);
           cnicController.clear();

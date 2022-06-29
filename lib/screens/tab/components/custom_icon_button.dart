@@ -2,23 +2,19 @@ import 'package:flutter/material.dart';
 
 class CustomIconButton extends StatelessWidget {
   final bool isActive;
-  final String name;
+  final IconData iconData;
   final VoidCallback onTap;
 
   const CustomIconButton({
     required this.isActive,
-    required this.name,
+    required this.iconData,
     required this.onTap,
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Image.asset(
-        'assets/icons/$name${isActive ? '_active' : ''}_icon.png',
-        height: 25,
-      ),
+    return IconButton(icon: Icon(iconData ,color:isActive ? Colors.green : Colors.black, size: 30,),
       onPressed: onTap,
     );
   }

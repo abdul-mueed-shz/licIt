@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/screens/agreement_screen/agreemenet_screen.dart';
+import 'package:fyp/screens/edit_profile/edit_profile_screen.dart';
 import 'package:fyp/screens/forgot_password/forgot_password.dart';
 import 'package:fyp/screens/general_template/general_template_dart.dart';
 import 'package:fyp/screens/handyman/houehold_screeen.dart';
@@ -15,6 +16,7 @@ import 'package:fyp/screens/search/search_screen.dart';
 import 'package:fyp/screens/signup_screen/signup_screen.dart';
 import 'package:fyp/screens/splash/splash_screen.dart';
 import 'package:fyp/screens/tab/tab_screen.dart';
+import 'package:fyp/screens/warning_screen/warning_screen.dart';
 
 import '../screens/contract_screen/contract_screen.dart';
 
@@ -36,4 +38,6 @@ final Map<String, WidgetBuilder> routes = {
   HouseHoldScreen.routeName: (context) => const HouseHoldScreen(),
   GeneralTemplate.routeName: (context) => const GeneralTemplate(),
   SearchScreen.routeName: (context) => const SearchScreen(),
+  WarningScreen.routeName: (context) => const WarningScreen(),
+  ProfileScreen.routeName: (context) => const ProfileScreen(),
 };

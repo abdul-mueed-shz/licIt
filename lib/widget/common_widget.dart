@@ -7,6 +7,7 @@ class CustomTextField extends StatelessWidget {
   final String title;
   final TextInputType inputType;
   final bool password;
+  final int maxLine;
   final Color color;
   final String? Function(String?) validator;
   const CustomTextField(
@@ -16,12 +17,14 @@ class CustomTextField extends StatelessWidget {
       this.password = false,
       this.color = Colors.green,
       this.inputType = TextInputType.text,
-      required this.validator})
+      required this.validator,
+      this.maxLine = 1})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      maxLines: maxLine,
       keyboardType: inputType,
       obscureText: password,
       autovalidateMode: AutovalidateMode.onUserInteraction,

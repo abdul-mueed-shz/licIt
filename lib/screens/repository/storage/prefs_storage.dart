@@ -18,6 +18,7 @@ class PrefStorage implements IStorage {
 
   static const _keyName = 'cnic';
   static const _keyContract = 'contractModel';
+  static const _cnicToken = 'token';
 
   @override
   Future<void> init() async {
@@ -29,7 +30,9 @@ class PrefStorage implements IStorage {
       _prefs.setString(_keyContract, jsonEncode(contractModel?.toJson()));
   @override
   Future<void> setId(String cnic) => _prefs.setString(_keyName, cnic);
-
+  @override
+  Future<void> setCnicToken(String token) =>
+      _prefs.setString(_cnicToken, token);
   @override
   String? get id => _prefs.getString(_keyName);
   @override

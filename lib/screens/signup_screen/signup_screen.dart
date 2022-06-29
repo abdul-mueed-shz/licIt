@@ -8,12 +8,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/model/local_user.dart';
 import 'package:fyp/screens/login_page/login_screen.dart';
+import 'package:fyp/screens/promise_agreement/promise_provider.dart';
 import 'package:fyp/screens/signup_screen/signature_board.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/common_widget.dart';
 import 'package:fyp/widget/hide_keyboard_on_background_tap.dart';
 import 'package:fyp/widget/validator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
   static const String routeName = '/SignUpScreen';
@@ -325,6 +327,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         return;
       } else if (checkValidation == 'no user Found') {
+        final token = await context
+            .read<PromiseProvider>()
+            .getDeviceTokenToSendNotification();
+
         String passwordHashing =
             Crypt.sha256(passwordController.text).toString();
         print("my hash password is $passwordHashing");
@@ -343,14 +349,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
             type: 'cnic');
         final localUser = LocalUser(
-          name: nameController.text,
-          cnicNo: cnicNoController.text,
-          phoneNumber: phoneNumberController.text,
-          email: emailController.text,
-          password: passwordHashing,
-          cnicImageUrl: cnic,
-          signatureImage: sign,
-        );
+            name: nameController.text,
+            cnicNo: cnicNoController.text,
+            phoneNumber: phoneNumberController.text,
+            email: emailController.text,
+            password: passwordHashing,
+            cnicImageUrl: cnic,
+            signatureImage: sign,
+            token: token);
         await userRepository.add(localUser).then((value) {
           nameController.clear();
           cnicNoController.clear();

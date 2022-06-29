@@ -32,7 +32,7 @@ class ErrorHandler {
                     ),
                   ),
                 ),
-                Container(
+                SizedBox(
                   height: 50.0,
                   child: Row(
                     children: [

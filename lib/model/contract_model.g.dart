@@ -60,8 +60,18 @@ Map<String, dynamic> _$ContractModelToJson(ContractModel instance) =>
 ContractDetail _$ContractDetailFromJson(Map<String, dynamic> json) =>
     ContractDetail(
       name: json['name'] as String?,
+      showSendOption: json['showSendOption'] as bool? ?? false,
+      witness1: json['witness1'] == null
+          ? null
+          : WitnessSignedModel.fromJson(
+              json['witness1'] as Map<String, dynamic>),
+      witness2: json['witness2'] == null
+          ? null
+          : WitnessSignedModel.fromJson(
+              json['witness2'] as Map<String, dynamic>),
       contractPerson: json['contractPerson'] as String?,
       reason: json['reason'] as String?,
+      warning: json['warning'] as String?,
       executionDate: json['executionDate'] as String?,
       endDate: json['endDate'] as String?,
       additionalCondition: json['additionalCondition'] as String?,
@@ -79,10 +89,14 @@ Map<String, dynamic> _$ContractDetailToJson(ContractDetail instance) =>
       'reason': instance.reason,
       'executionDate': instance.executionDate,
       'endDate': instance.endDate,
+      'warning': instance.warning,
       'additionalCondition': instance.additionalCondition,
       'isCompletionRadio': instance.isCompletionRadio,
       'additionalConditionsRadio': instance.additionalConditionsRadio,
       'haveTodo': instance.haveTodo,
       'violateContractRadio': instance.violateContractRadio,
       'amountPenalty': instance.amountPenalty,
+      'showSendOption': instance.showSendOption,
+      'witness1': instance.witness1,
+      'witness2': instance.witness2,
     };

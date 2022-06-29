@@ -1,41 +1,75 @@
+import 'dart:async';
+import 'dart:ui';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fyp/locator.dart';
+import 'package:fyp/model/contract_model.dart';
+import 'package:fyp/model/local_user.dart';
+import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/screens/search/search_screen.dart';
+import 'package:fyp/util/constant.dart';
 import 'package:fyp/util/my_extensions.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class ReviewTemplateScreen extends StatefulWidget {
   final String startDate;
+  final String contractID;
+  final String? contractName;
   final String endDate;
+  final bool witnessShow;
+  final String? witness1Id;
+  final String? witness2Id;
   final String userNameFrom;
   final String userNameTo;
   final String userAddressFrom;
   final String userAddressTo;
   final String userCityFrom;
   final String userCityTo;
+  final String receiverRequestId;
   final String userCountryFrom;
   final String userCountryTo;
   final String userLocalityFrom;
   final String userLocalityTo;
   final String userProvinceFrom;
+  final String warning;
+  final bool witnessStatus1;
+  final bool witnessStatus2;
   final String userProvinceTo;
+  final String reviewRequestID;
+  final String selectedStatus;
 
-  const ReviewTemplateScreen(
-      {Key? key,
-      required this.startDate,
-      required this.endDate,
-      required this.userNameFrom,
-      required this.userNameTo,
-      required this.userAddressFrom,
-      required this.userAddressTo,
-      required this.userCityFrom,
-      required this.userCityTo,
-      required this.userCountryFrom,
-      required this.userCountryTo,
-      required this.userLocalityFrom,
-      required this.userLocalityTo,
-      required this.userProvinceFrom,
-      required this.userProvinceTo})
-      : super(key: key);
+  const ReviewTemplateScreen({
+    Key? key,
+    required this.startDate,
+    this.witnessShow = false,
+    this.witnessStatus1 = false,
+    this.witnessStatus2 = false,
+    required this.endDate,
+    required this.warning,
+    required this.reviewRequestID,
+    required this.receiverRequestId,
+    required this.userNameFrom,
+    required this.userNameTo,
+    required this.userAddressFrom,
+    required this.userAddressTo,
+    required this.userCityFrom,
+    required this.userCityTo,
+    required this.userCountryFrom,
+    required this.userCountryTo,
+    required this.userLocalityFrom,
+    required this.userLocalityTo,
+    required this.userProvinceFrom,
+    required this.userProvinceTo,
+    required this.contractID,
+    required this.contractName,
+    this.selectedStatus = 'review',
+    this.witness1Id,
+    this.witness2Id,
+  }) : super(key: key);
 
   @override
   State<ReviewTemplateScreen> createState() => _ReviewTemplateScreenState();
@@ -43,82 +77,414 @@ class ReviewTemplateScreen extends StatefulWidget {
 
 class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
   final formDataKey = GlobalKey<FormState>();
+  bool check = false;
+  bool isOnTab = true;
+  final controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 100),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Licit Agreement",
-                textAlign: TextAlign.justify,
-                style: GoogleFonts.lato(
-                    fontSize: 40,
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 30),
-              MyTextWidget(
-                  title:
-                      'This Agreement is Entered into on Date ${widget.startDate.formattedDate}'),
-              MyTextWidget(
-                  title:
-                      'Between M/s. ${widget.userNameFrom} ,addressed at ${widget.userAddressFrom}'),
-              MyTextWidget(
-                  title:
-                      '${widget.userLocalityFrom} ,${widget.userCityFrom},${widget.userProvinceFrom},${widget.userCountryFrom} hereinafter referred'),
-              const MyTextWidget(title: 'to as the Disclosing party'),
-              Text(
-                '\n And \n',
-                style:
-                    GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              MyTextWidget(
-                  title:
-                      'M/s. ${widget.userNameTo} ,addressed at ${widget.userAddressTo} ,${widget.userLocalityTo} ,${widget.userCityTo}'),
-              MyTextWidget(
-                  title:
-                      '${widget.userProvinceTo},${widget.userCountryTo} hereinafter referred to as the'),
-              MyTextWidget(
-                  title:
-                      'Receiving party collectively ,${widget.userCountryTo} hereinafter referred to as the'),
-              const SizedBox(height: 120),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(child: MyElevatedButton('Review', onTap: _review)),
-                  const SizedBox(width: 7),
-                  Expanded(
-                      child: MyElevatedButton('Send Back to Review',
-                          onTap: _onBackReview))
-                ],
-              ),
-            ],
+    final currentID = storage.id ?? '3123456789123';
+    return SafeArea(
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+            ),
+            child: Consumer<PromiseProvider>(
+              builder: (context, provider, child) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      "Licit Agreement",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.lato(
+                          fontSize: 40,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    widget.warning.isNotEmpty
+                        ? Text(
+                            widget.warning,
+                            style: GoogleFonts.lato(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          )
+                        : const SizedBox(),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.8),
+                          border: Border.all(color: Colors.black),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20))),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 5),
+                          const MyTextWidget(
+                            title: 'This Agreement is Entered into on',
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                            title: 'Start Date',
+                            content: widget.startDate.formattedDate,
+                          ),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'Between M/s',
+                              content: widget.userNameFrom),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'addressed at',
+                              content: widget.userAddressFrom),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'Locality ',
+                              content: widget.userLocalityFrom),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'City ', content: widget.userCityFrom),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'Province ',
+                              content: widget.userProvinceFrom),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'Country ',
+                              content: widget.userCountryFrom),
+                          const SizedBox(height: 5),
+                          const MyTextWidget(
+                              title:
+                                  'here in after referred to as the Disclosing party'),
+                          Text(
+                            '',
+                            textAlign: TextAlign.left,
+                            style: GoogleFonts.lato(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          ContractRichTextSpan(
+                            title: 'End Date',
+                            content: widget.endDate.formattedDate,
+                          ),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'Between M/s', content: widget.userNameTo),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'addressed at',
+                              content: widget.userAddressTo),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'Locality ',
+                              content: widget.userLocalityTo),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'City ', content: widget.userCityTo),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'Province ',
+                              content: widget.userProvinceTo),
+                          const SizedBox(height: 5),
+                          ContractRichTextSpan(
+                              title: 'Country ', content: widget.userCountryTo),
+                          const SizedBox(height: 5),
+                          const MyTextWidget(
+                              title:
+                                  'Receiving party collectively  here in after referred to as the'),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    if (currentID == widget.receiverRequestId &&
+                        provider.isShow == false &&
+                        widget.witnessShow == false &&
+                        widget.selectedStatus == 'review')
+                      isReviewBack(),
+                    if (widget.witnessShow)
+                      MyElevatedButton('Click to add Witness', onTap: (_) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SearchScreen(
+                                    witness: true, id: widget.contractID)));
+                      }),
+                    if (widget.witnessShow == false &&
+                            !widget.witnessStatus1 &&
+                            widget.selectedStatus == 'signed' ||
+                        widget.witnessShow == false &&
+                            !widget.witnessStatus2 &&
+                            widget.selectedStatus == 'signed')
+                      MyElevatedButton('Click to Signed', onTap: _signedTap)
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _review(BuildContext context) {}
+  Widget isReviewBack() {
+    if (check) {
+      return Column(
+        children: [
+          Form(
+            key: formDataKey,
+            child: CommentBox(
+              isOnTab: isOnTab,
+              controller: controller,
+              onSend: (context) async {
+                if (formDataKey.currentState!.validate() && isOnTab) {
+                  if (controller.text.isEmpty) {
+                    return EasyLoading.showError('Please Enter Comment');
+                  }
+                  setState(() => isOnTab = false);
+                  final data = controller.text.trim();
+                  final userData =
+                      await userRepository.get(widget.reviewRequestID);
+                  final user2 =
+                      await userRepository.get(storage.id ?? '3123456789123');
+                  final commentModel = CommentModel(
+                      commentName: userData?.name ?? '', comment: data);
+                  await userRepository.update(widget.reviewRequestID, {
+                    'comments': FieldValue.arrayUnion([commentModel.toJson()])
+                  });
+                  context.read<PromiseProvider>().send(
+                      userData?.token ?? '',
+                      'Changes Required $data',
+                      '${user2?.name ?? ''} comment on contract');
+                  controller.clear();
+                  EasyLoading.showSuccess('Your Message have been send');
 
-  void _onBackReview(BuildContext context) {}
+                  Future.delayed(const Duration(seconds: 2), () {
+                    setState(() => isOnTab = true);
+                  });
+                } else {
+                  return EasyLoading.showError("Please Enter Comment");
+                }
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 20),
+            child: MyElevatedButton('back', onTap: _onBack),
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: MyElevatedButton(
+              'Signed',
+              onTap: (context) async {
+                final update = {
+                  'user2Signed': true,
+                };
+                await FirebaseFirestore.instance
+                    .collection('reviews')
+                    .doc(widget.contractID)
+                    .update(update);
+                await userRepository
+                    .update(widget.reviewRequestID, {'status': 'witness'});
+                await userRepository
+                    .update(widget.receiverRequestId, {'status': 'witness'});
+                context.read<PromiseProvider>().signed();
+              },
+            ),
+          ),
+          const SizedBox(width: 7),
+          Expanded(
+              child:
+                  MyElevatedButton('Send Back to Review', onTap: _onBackReview))
+        ],
+      );
+    }
+  }
+
+  void _onBackReview(BuildContext context) {
+    setState(() => check = true);
+  }
+
+  void _onBack(BuildContext context) {
+    setState(() => check = false);
+  }
+
+  void _signedTap(BuildContext context) async {
+    final reviewContract = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.reviewRequestID)
+        .collection('contract')
+        .doc(widget.contractID)
+        .get();
+    final review = reviewContract.data() ?? {};
+    if (review.isEmpty) {
+      return EasyLoading.showInfo('Somethings Happens');
+    }
+    final contractData = ContractModel.fromJson(review);
+    if (!widget.witnessStatus1 &&
+        contractData.contractDetail?.witness1?.witnessSigned == false) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.reviewRequestID)
+          .collection('contract')
+          .doc(widget.contractID)
+          .update({
+        'contractDetail.witness1.witnessSigned': true,
+      });
+      final myReview = await FirebaseFirestore.instance
+          .collection('reviews')
+          .doc(widget.contractID)
+          .get();
+      final reviewModel = myReview.data() ?? {};
+      final myReviewModel = ReviewModel.fromJson(reviewModel);
+      final model = WitnessShowModel(
+          contractName: widget.contractName ?? 'Promise',
+          contractID: widget.contractID,
+          user1: myReviewModel.requestName,
+          user2: myReviewModel.reviewName,
+          contractIdUser: widget.reviewRequestID);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(storage.id)
+          .update({
+        'witness': FieldValue.arrayRemove([model.toJson()])
+      });
+      Navigator.of(context).pop();
+    } else if (!widget.witnessStatus2 &&
+        contractData.contractDetail?.witness2?.witnessSigned == false &&
+        contractData.contractDetail?.witness1?.witnessSigned == true) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.reviewRequestID)
+          .collection('contract')
+          .doc(widget.contractID)
+          .update({
+        'contractDetail.witness2.witnessSigned': true,
+      });
+      final myReview = await FirebaseFirestore.instance
+          .collection('reviews')
+          .doc(widget.contractID)
+          .get();
+      final reviewModel = myReview.data() ?? {};
+      final myReviewModel = ReviewModel.fromJson(reviewModel);
+      final model = WitnessShowModel(
+          contractName: widget.contractName ?? 'Promise',
+          contractID: widget.contractID,
+          user1: myReviewModel.requestName,
+          user2: myReviewModel.reviewName,
+          contractIdUser: widget.reviewRequestID);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(storage.id)
+          .update({
+        'witness': FieldValue.arrayRemove([model.toJson()])
+      });
+      Navigator.of(context).pop();
+    }
+  }
 }
 
 class MyTextWidget extends StatelessWidget {
   final String title;
-  const MyTextWidget({Key? key, required this.title}) : super(key: key);
+  final TextAlign textAlign;
+
+  const MyTextWidget(
+      {Key? key, required this.title, this.textAlign = TextAlign.justify})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Text(
       title,
-      textAlign: TextAlign.justify,
-      style: GoogleFonts.lato(fontSize: 16),
+      textAlign: textAlign,
+      style: GoogleFonts.lato(
+          fontSize: 16, fontWeight: FontWeight.bold, color: Colors.yellow),
+    );
+  }
+}
+
+class CommentBox extends StatelessWidget {
+  final TextEditingController controller;
+  final BorderRadius? inputRadius;
+  final BuildContextCallback onSend;
+  final bool isOnTab;
+
+  const CommentBox(
+      {Key? key,
+      required this.controller,
+      this.inputRadius,
+      this.isOnTab = false,
+      required this.onSend})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      maxLines: 3,
+      selectionHeightStyle: BoxHeightStyle.tight,
+      decoration: InputDecoration(
+          hintText: 'Write a Comment',
+          hintStyle: const TextStyle(
+            color: Colors.grey,
+          ),
+          border: OutlineInputBorder(
+              borderRadius: inputRadius ?? BorderRadius.circular(32)),
+          suffixIcon: GestureDetector(
+            child: Icon(
+              Icons.send,
+              color: isOnTab ? Colors.green : Colors.grey,
+            ),
+            onTap: () => isOnTab ? onSend(context) : 0,
+          )),
+      style: const TextStyle(
+        color: Colors.black,
+      ),
+    );
+  }
+}
+
+class ContractRichTextSpan extends StatelessWidget {
+  final String title;
+  final String content;
+
+  const ContractRichTextSpan(
+      {Key? key, required this.title, required this.content})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: RichText(
+              text: TextSpan(children: [
+            TextSpan(
+                text: title,
+                style: GoogleFonts.lato(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white))
+          ])),
+        ),
+        Expanded(
+          child: RichText(
+              text: TextSpan(children: [
+            TextSpan(
+                text: content,
+                style: GoogleFonts.lato(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white))
+          ])),
+        ),
+      ],
     );
   }
 }

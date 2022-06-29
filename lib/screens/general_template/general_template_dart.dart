@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fyp/locator.dart';
 import 'package:fyp/screens/promise_agreement/promise_provider.dart';
-import 'package:fyp/screens/search/search_screen.dart';
+import 'package:fyp/screens/warning_screen/warning_screen.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/common_widget.dart';
 import 'package:fyp/widget/date_time_field.dart';
@@ -21,6 +22,16 @@ class GeneralTemplate extends StatefulWidget {
 
 class _GeneralTemplateState extends State<GeneralTemplate> {
   final formDataKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    final pref = storage.contract;
+    final provider = context.read<PromiseProvider>();
+    if (pref?.contractStartDate != null && pref?.contractEndDate != null) {
+      provider.updateTemplateField();
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -291,7 +302,7 @@ class _GeneralTemplateState extends State<GeneralTemplate> {
       final endDate = date.add(Duration(days: calculateDays));
       provider.updateGeneralTextField(endDate.toString());
 
-      Navigator.pushNamed(context, SearchScreen.routeName);
+      Navigator.pushNamed(context, WarningScreen.routeName);
     }
   }
 }

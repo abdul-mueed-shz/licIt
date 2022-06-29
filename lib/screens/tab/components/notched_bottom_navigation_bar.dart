@@ -22,18 +22,18 @@ class NotchedBottomNavigationBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           CustomIconButton(
-            name: 'home',
+            iconData: Icons.home,
             isActive: selectedIndex == 0,
             onTap: () => onItemTapped(0),
           ),
           const SizedBox(width: 100),
           CustomIconButton(
-            name: 'notification',
+            iconData: Icons.notifications,
             onTap: () => onItemTapped(2),
             isActive: selectedIndex == 2,
           ),
           CustomIconButton(
-            name: 'stats',
+            iconData: Icons.person,
             onTap: () => onItemTapped(1),
             isActive: selectedIndex == 1,
           ),

@@ -1,3 +1,4 @@
+import 'package:fyp/model/local_user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'contract_model.g.dart';
@@ -66,17 +67,25 @@ class ContractDetail {
   final String? reason;
   final String? executionDate;
   final String? endDate;
+  final String? warning;
   final String? additionalCondition;
   final String? isCompletionRadio;
   final String? additionalConditionsRadio;
   final String? haveTodo;
   final String? violateContractRadio;
   final String? amountPenalty;
+  final bool showSendOption;
+  final WitnessSignedModel? witness1;
+  final WitnessSignedModel? witness2;
 
   ContractDetail(
       {this.name,
+      this.showSendOption = false,
+      this.witness1,
+      this.witness2,
       this.contractPerson,
       this.reason,
+      this.warning,
       this.executionDate,
       this.endDate,
       this.additionalCondition,

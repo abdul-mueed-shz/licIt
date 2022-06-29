@@ -9,11 +9,28 @@ part of 'local_user.dart';
 LocalUser _$LocalUserFromJson(Map<String, dynamic> json) => LocalUser(
       name: json['name'] as String,
       cnicNo: json['cnicNo'] as String,
+      witnessShowModel: (json['witnessShowModel'] as List<dynamic>?)
+              ?.map((e) => WitnessShowModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      contractDetailTab: (json['contractDetailTab'] as List<dynamic>?)
+              ?.map(
+                  (e) => ContractDetailTab.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       phoneNumber: json['phoneNumber'] as String,
       email: json['email'] as String,
+      witness: (json['witness'] as List<dynamic>?)
+              ?.map((e) => WitnessShowModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      comments: (json['comments'] as List<dynamic>?)
+              ?.map((e) => CommentModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       token: json['token'] as String?,
-      allContractId: (json['allContractId'] as List<dynamic>?)
-              ?.map((e) => e as String)
+      contractId: (json['contractId'] as List<dynamic>?)
+              ?.map((e) => ReviewIDModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       password: json['password'] as String,
@@ -30,5 +47,109 @@ Map<String, dynamic> _$LocalUserToJson(LocalUser instance) => <String, dynamic>{
       'token': instance.token,
       'cnicImageUrl': instance.cnicImageUrl,
       'signatureImage': instance.signatureImage,
-      'allContractId': instance.allContractId,
+      'contractId': instance.contractId.map((e) => e.toJson()).toList(),
+      'comments': instance.comments.map((e) => e.toJson()).toList(),
+      'contractDetailTab':
+          instance.contractDetailTab.map((e) => e.toJson()).toList(),
+      'witness': instance.witness.map((e) => e.toJson()).toList(),
+      'witnessShowModel':
+          instance.witnessShowModel.map((e) => e.toJson()).toList(),
+    };
+
+ReviewModel _$ReviewModelFromJson(Map<String, dynamic> json) => ReviewModel(
+      reviewRequestId: json['reviewRequestId'] as String,
+      contractID: json['contractID'] as String,
+      reviewName: json['reviewName'] as String,
+      requestName: json['requestName'] as String,
+      user1Signed: json['user1Signed'] as bool? ?? false,
+      user2Signed: json['user2Signed'] as bool? ?? false,
+      receiverRequestId: json['receiverRequestId'] as String,
+      contractName: json['contractName'] as String,
+    );
+
+Map<String, dynamic> _$ReviewModelToJson(ReviewModel instance) =>
+    <String, dynamic>{
+      'reviewRequestId': instance.reviewRequestId,
+      'contractID': instance.contractID,
+      'reviewName': instance.reviewName,
+      'requestName': instance.requestName,
+      'receiverRequestId': instance.receiverRequestId,
+      'contractName': instance.contractName,
+      'user1Signed': instance.user1Signed,
+      'user2Signed': instance.user2Signed,
+    };
+
+ReviewIDModel _$ReviewIDModelFromJson(Map<String, dynamic> json) =>
+    ReviewIDModel(
+      contractID: json['contractID'] as String,
+      userName: json['userName'] as String,
+      contractName: json['contractName'] as String,
+    );
+
+Map<String, dynamic> _$ReviewIDModelToJson(ReviewIDModel instance) =>
+    <String, dynamic>{
+      'contractID': instance.contractID,
+      'userName': instance.userName,
+      'contractName': instance.contractName,
+    };
+
+WitnessSignedModel _$WitnessSignedModelFromJson(Map<String, dynamic> json) =>
+    WitnessSignedModel(
+      witnessId: json['witnessId'] as String,
+      witnessSigned: json['witnessSigned'] as bool? ?? false,
+    );
+
+Map<String, dynamic> _$WitnessSignedModelToJson(WitnessSignedModel instance) =>
+    <String, dynamic>{
+      'witnessId': instance.witnessId,
+      'witnessSigned': instance.witnessSigned,
+    };
+
+WitnessShowModel _$WitnessShowModelFromJson(Map<String, dynamic> json) =>
+    WitnessShowModel(
+      witnessTabShow: json['witnessTabShow'] as bool? ?? false,
+      user1: json['user1'] as String,
+      user2: json['user2'] as String,
+      contractName: json['contractName'] as String,
+      contractID: json['contractID'] as String,
+      contractIdUser: json['contractIdUser'] as String,
+    );
+
+Map<String, dynamic> _$WitnessShowModelToJson(WitnessShowModel instance) =>
+    <String, dynamic>{
+      'witnessTabShow': instance.witnessTabShow,
+      'contractID': instance.contractID,
+      'contractIdUser': instance.contractIdUser,
+      'user1': instance.user1,
+      'contractName': instance.contractName,
+      'user2': instance.user2,
+    };
+
+ContractDetailTab _$ContractDetailTabFromJson(Map<String, dynamic> json) =>
+    ContractDetailTab(
+      contractID: json['contractID'] as String,
+      reviewName: json['reviewName'] as String,
+      contractUserId: json['contractUserId'] as String,
+      requestName: json['requestName'] as String,
+      contractName: json['contractName'] as String,
+    );
+
+Map<String, dynamic> _$ContractDetailTabToJson(ContractDetailTab instance) =>
+    <String, dynamic>{
+      'contractID': instance.contractID,
+      'contractName': instance.contractName,
+      'reviewName': instance.reviewName,
+      'requestName': instance.requestName,
+      'contractUserId': instance.contractUserId,
+    };
+
+CommentModel _$CommentModelFromJson(Map<String, dynamic> json) => CommentModel(
+      commentName: json['commentName'] as String,
+      comment: json['comment'] as String,
+    );
+
+Map<String, dynamic> _$CommentModelToJson(CommentModel instance) =>
+    <String, dynamic>{
+      'commentName': instance.commentName,
+      'comment': instance.comment,
     };

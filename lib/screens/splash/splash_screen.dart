@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:fyp/screens/intro/intro_screen.dart';
-import 'package:fyp/screens/login_page/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  static const String routeName = "/";
+  static const String routeName = "/SplashScreen";
 
   const SplashScreen({Key? key}) : super(key: key);
 

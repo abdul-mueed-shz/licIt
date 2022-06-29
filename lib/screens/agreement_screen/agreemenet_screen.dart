@@ -35,13 +35,13 @@ class _AgreementScreenState extends State<AgreementScreen> {
           ),
           const SizedBox(height: 30),
           Text(
-            "An official Pledge to myself with a Signature An official Pledge to myself with a Signature An official Pledge to myself with a Signature An official Pledge to myself with a Signature An official Pledge to myself with a Signature An official Pledge to myself with a Signature",
+            modal.title,
             textAlign: TextAlign.left,
-            style: GoogleFonts.lato(fontSize: 16),
+            style: GoogleFonts.lato(fontSize: 16 ,color:Colors.grey),
           ),
           const Spacer(),
           MyElevatedButton('Next Button', onTap: (_) async {
-            storage.removeUser();
+            await storage.removeUser();
             context.read<PromiseProvider>().clearAllData();
             Navigator.pushNamed(context, modal.routeName,
                 arguments: modal.name);

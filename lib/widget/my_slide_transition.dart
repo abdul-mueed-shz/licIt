@@ -53,7 +53,7 @@ class _MySlideTransitionState extends State<MySlideTransition>
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
+    _controller.dispose();
   }
 }

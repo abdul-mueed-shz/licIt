@@ -84,7 +84,7 @@ class _PromiseAgreementState extends State<PromiseAgreement> {
                   child: MyElevatedButton('Next', onTap: (_) async {
                     if (key.currentState!.validate()) {
                       await provider.addPromiseAgreementData(widget.title,
-                          TimeLineScreen.routeName, Status.pending.value);
+                          TimeLineScreen.routeName, Status.draft.value);
                       final pref = storage.contract;
                       if (pref?.contractDetail?.isCompletionRadio == null &&
                           pref?.contractDetail?.executionDate == null) {
@@ -147,12 +147,7 @@ class DeleteBacKFunctionality extends StatelessWidget {
   }
 }
 
-enum Status {
-  pending,
-  active,
-  delete,
-  rejected,
-}
+enum Status { pending, active, delete, rejected, draft }
 
 extension StatusValue on Status {
   String get value {
@@ -165,6 +160,8 @@ extension StatusValue on Status {
         return 'Delete';
       case Status.rejected:
         return 'Rejected';
+      case Status.draft:
+        return 'Draft';
     }
   }
 }

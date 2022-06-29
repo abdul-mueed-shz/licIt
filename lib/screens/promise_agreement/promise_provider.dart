@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/model/contract_model.dart';
 import 'package:fyp/screens/general_template/general_template_dart.dart';
@@ -17,6 +18,12 @@ class PromiseProvider with ChangeNotifier {
   String? selectedAdditionalRadioValue;
   String? selectedPenaltiesRadioValue;
   DateTime? selectedStartDateTemplate;
+  bool isDraft = false;
+  bool isShow = false;
+  void updateShow(bool data) {
+    isShow = data;
+    notifyListeners();
+  }
 
   final nameController = TextEditingController();
   final myselfController = TextEditingController();
@@ -45,6 +52,11 @@ class PromiseProvider with ChangeNotifier {
     nameController.clear();
     myselfController.clear();
     healthyController.clear();
+    notifyListeners();
+  }
+
+  void signed() {
+    isShow = true;
     notifyListeners();
   }
 
@@ -86,6 +98,7 @@ class PromiseProvider with ChangeNotifier {
 
   Future<void> addPromiseAgreementData(
       String title, String savedLocation, String status) async {
+    EasyLoading.show();
     ContractModel? contractModelDataId = storage.contract;
 
     final id =
@@ -103,8 +116,9 @@ class PromiseProvider with ChangeNotifier {
             reason: healthyController.text.trim(),
           ));
       await contractRepository.add(contract);
-
       setContractPref(contract);
+      EasyLoading.dismiss();
+      return;
     }
     final updateData = {
       'id': id,
@@ -120,9 +134,11 @@ class PromiseProvider with ChangeNotifier {
     if (dataGet != null) {
       setContractPref(dataGet);
     }
+    EasyLoading.dismiss();
   }
 
   void updateTimeLineField() async {
+    EasyLoading.show();
     final contract = storage.contract;
     if (selectedTimeLineRadioValue == 'Yes') {
       selectedEndDate = null;
@@ -139,6 +155,7 @@ class PromiseProvider with ChangeNotifier {
     if (model != null) {
       storage.setContract(model);
     }
+    EasyLoading.dismiss();
     notifyListeners();
   }
 
@@ -150,6 +167,7 @@ class PromiseProvider with ChangeNotifier {
   }
 
   void addAdditionalScreenField() async {
+    EasyLoading.show();
     final contract = storage.contract;
 
     final update = {
@@ -165,6 +183,7 @@ class PromiseProvider with ChangeNotifier {
     if (timeModel != null) {
       storage.setContract(timeModel);
     }
+    EasyLoading.dismiss();
     notifyListeners();
   }
 
@@ -189,6 +208,7 @@ class PromiseProvider with ChangeNotifier {
 
   void setPenaltyValues() {
     final pref = storage.contract;
+    EasyLoading.show();
     selectedPenaltiesRadioValue = pref?.contractDetail?.violateContractRadio;
     if (selectedPenaltiesRadioValue == 'Pay a Monetary penalty') {
       penaltyController.text = pref?.contractDetail?.amountPenalty ?? '';
@@ -203,9 +223,11 @@ class PromiseProvider with ChangeNotifier {
       haveController.clear();
       penaltyController.clear();
     }
+    EasyLoading.dismiss();
   }
 
   void setTimeLineUpdate() {
+    EasyLoading.show();
     final pref = storage.contract;
     final contract = pref?.contractDetail;
     selectedTimeLineRadioValue = contract?.isCompletionRadio;
@@ -215,9 +237,11 @@ class PromiseProvider with ChangeNotifier {
     } else if (selectedTimeLineRadioValue == 'Yes') {
       selectedEndDate = null;
     }
+    EasyLoading.dismiss();
   }
 
   void updatePenaltyField() async {
+    EasyLoading.show();
     final contract = storage.contract;
     if (selectedPenaltiesRadioValue == 'Pay a Monetary penalty') {
       haveController.clear();
@@ -240,10 +264,12 @@ class PromiseProvider with ChangeNotifier {
     if (model != null) {
       storage.setContract(model);
     }
+    EasyLoading.dismiss();
     notifyListeners();
   }
 
   void updateGeneralTextField(String endDate) async {
+    EasyLoading.show();
     final contract = storage.contract;
     final updateBody = {
       'savedPlace': GeneralTemplate.routeName,
@@ -267,6 +293,7 @@ class PromiseProvider with ChangeNotifier {
     if (model != null) {
       storage.setContract(model);
     }
+    EasyLoading.dismiss();
     notifyListeners();
   }
 
@@ -305,7 +332,7 @@ class PromiseProvider with ChangeNotifier {
     return token.toString();
   }
 
-  Future<void> send(String token) async {
+  Future<void> send(String token, String body, String title) async {
     final requestUrl = Uri.parse('https://fcm.googleapis.com/fcm/send');
     final headerMap = {
       'Content-Type': 'application/json',
@@ -316,8 +343,8 @@ class PromiseProvider with ChangeNotifier {
       'to': token,
       'notification': {
         'priority': 'high',
-        "body": "New Video has been uploaded",
-        "title": "yes Bro",
+        "body": body,
+        "title": title,
         "android_channel_id": "licitnotification",
       },
     };
@@ -325,5 +352,28 @@ class PromiseProvider with ChangeNotifier {
         body: jsonEncode(bodyMap), headers: headerMap);
     final responseBody = jsonDecode(response.body);
     print(responseBody);
+  }
+
+  updateTemplateField() {
+    final pref = storage.contract;
+    selectedStartDateTemplate = DateTime.parse(pref?.contractStartDate ?? '');
+    templateUserNameFrom.text = pref?.userNameFrom ?? '';
+    templateNameUserTo.text = pref?.userNameTo ?? '';
+    templateUserAddressFrom.text = pref?.userAddressFrom ?? '';
+    templateUserAddressTo.text = pref?.userAddressTo ?? '';
+    templateUserLocalityTo.text = pref?.userLocalityTo ?? '';
+    templateUserLocalityFrom.text = pref?.userLocalityFrom ?? '';
+    templateUserCityFrom.text = pref?.userCityFrom ?? '';
+    templateUserCityTo.text = pref?.userCityTo ?? '';
+    templateUserProvinceTo.text = pref?.userProvinceTo ?? '';
+    templateUserProvinceFrom.text = pref?.userProvinceFrom ?? '';
+    templateUserCountryFrom.text = pref?.userCountryFrom ?? '';
+    templateUserCountryTo.text = pref?.userCountryTo ?? '';
+    final dateStartCal = DateTime.parse(pref?.contractStartDate ?? '');
+    final dateEndCal = DateTime.parse(pref?.contractEndDate ?? '');
+    final calculateDate = dateEndCal.difference(dateStartCal);
+    final duration = calculateDate.inDays ~/ 365;
+
+    templateUserEndYear.text = duration.toString();
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp/screens/handyman/component/compensation.dart';
 import 'package:fyp/screens/handyman/component/project_title.dart';
 import 'package:fyp/screens/promise_agreement/component/time_line.dart';
-import 'package:fyp/screens/rental/rental_agreement.dart';
+
 import 'package:fyp/util/constant.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/common_widget.dart';

@@ -15,6 +15,7 @@ import 'package:fyp/screens/promise_agreement/promise_provider.dart';
 import 'package:fyp/screens/review_template_screen/review_template_dart.dart';
 import 'package:fyp/screens/warning_screen/warning_screen.dart';
 import 'package:fyp/util/constant.dart';
+import 'package:fyp/util/my_extensions.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +26,7 @@ final List<String> tabs = [
   'Signed Tab',
   'Witness',
   'Deleted',
-  'Contract Tab'
+  'Detail Tab'
 ];
 
 class HomePage extends StatefulWidget {
@@ -138,50 +139,12 @@ class AllTabView extends StatelessWidget {
                     element.data()! as Map<String, dynamic>;
                 final e = ContractModel.fromJson(mydata);
                 return GeneralHomeCard(
-                    contractModelData: e,
-                    onPressed: (context) => _pressed(context, e));
+                    contractModelData: e, onPressed: (context) => () {});
               }).toList(),
             );
           }
           return const Center(child: CircularProgressIndicator());
         });
-  }
-
-  void _pressed(BuildContext context, ContractModel details) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) => showDialogBox1(context, details));
-  }
-
-  void updateStatus(ContractModel details) async {
-    String status;
-    status = details.status != 'Delete' ? 'Delete' : 'Pending';
-    final updatedContract = {'status': status};
-    await contractRepository.update(details.id, updatedContract);
-  }
-
-  Widget showDialogBox1(BuildContext context, ContractModel details) {
-    String status = details.status;
-    return AlertDialog(
-      title: const Text('Are you Sure ?'),
-      content: const Text('Do you want to Delete this  Agreement?'),
-      actions: <Widget>[
-        TextButton(
-            child: status != 'Delete'
-                ? const Text('Delete')
-                : const Text('Restore'),
-            onPressed: () {
-              updateStatus(details);
-              Navigator.of(context).pop();
-            }),
-        TextButton(
-          child: const Text('Cancel'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
   }
 }
 
@@ -194,6 +157,7 @@ class GeneralHomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentDate = contractModelData.contractDetail?.executionDate ?? '';
     return GestureDetector(
       onTap: () => onPressed(context),
       child: Card(
@@ -211,27 +175,25 @@ class GeneralHomeCard extends StatelessWidget {
                     GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 5),
-              Text(contractModelData.contractDetail?.executionDate.toString() ??
-                  ''),
+              currentDate.isEmpty
+                  ? ''.toText()
+                  : currentDate.formattedDate.toText(),
+              const SizedBox(width: 20),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const Expanded(
-                      child: CircleAvatar(child: Icon(Icons.abc_outlined))),
-                  const SizedBox(width: 20),
                   Expanded(
-                    flex: 2,
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       child: Text(
                         contractModelData.status,
+                        textAlign: TextAlign.center,
                         style: const TextStyle(overflow: TextOverflow.ellipsis),
                       ),
                       decoration: BoxDecoration(
                           color: Colors.orange,
                           borderRadius: BorderRadius.circular(12)),
                     ),
-                  )
+                  ),
                 ],
               ),
             ],
@@ -354,6 +316,9 @@ class _ReviewViewState extends State<ReviewView> {
           if (snapshot.hasData && snapshot.data != null) {
             final data = snapshot.data?.data() ?? {};
             final user = LocalUser.fromJson(data);
+            if (user.contractId.isEmpty) {
+              return const Center(child: Text("No Contract"));
+            }
             return GridView.count(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -456,7 +421,7 @@ class _ReviewViewState extends State<ReviewView> {
                                     children: [
                                       Text(e.contractName),
                                       Text(
-                                        myReviewModel.requestName.toUpperCase(),
+                                        myReviewModel.reviewName.toUpperCase(),
                                         style: GoogleFonts.lato(
                                             fontSize: 14, color: Colors.black),
                                       ),
@@ -471,7 +436,7 @@ class _ReviewViewState extends State<ReviewView> {
                                                     ? Colors.orange
                                                     : Colors.red),
                                             const SizedBox(height: 5),
-                                            Text(myReviewModel.reviewName
+                                            Text(myReviewModel.requestName
                                                 .toUpperCase()),
                                             const SizedBox(height: 5),
                                             StatusSigned(
@@ -534,7 +499,7 @@ class _ReviewViewState extends State<ReviewView> {
                                                         .doc(myReviewModel
                                                             .receiverRequestId)
                                                         .update({
-                                                      'witnessShowModel':
+                                                      'witnessScreenShow':
                                                           FieldValue.arrayUnion(
                                                               [model.toJson()])
                                                     });
@@ -542,16 +507,51 @@ class _ReviewViewState extends State<ReviewView> {
                                                         .instance
                                                         .collection('users')
                                                         .doc(myReviewModel
+                                                            .receiverRequestId)
+                                                        .update({
+                                                      'rejectWitness': [
+                                                        model.toJson()
+                                                      ]
+                                                    });
+                                                    final model1 =
+                                                        WitnessShowModel(
+                                                      contractName:
+                                                          myReviewModel
+                                                              .contractName,
+                                                      contractID: e.contractID,
+                                                      user1: myReviewModel
+                                                          .reviewName,
+                                                      user2: myReviewModel
+                                                          .requestName,
+                                                      witnessTabShow: true,
+                                                      contractIdUser:
+                                                          myReviewModel
+                                                              .reviewRequestId,
+                                                    );
+                                                    await FirebaseFirestore
+                                                        .instance
+                                                        .collection('users')
+                                                        .doc(myReviewModel
                                                             .reviewRequestId)
                                                         .update(
                                                       {
-                                                        'witnessShowModel':
+                                                        'witnessScreenShow':
                                                             FieldValue
                                                                 .arrayUnion([
-                                                          model.toJson()
+                                                          model1.toJson()
                                                         ])
                                                       },
                                                     );
+                                                    await FirebaseFirestore
+                                                        .instance
+                                                        .collection('users')
+                                                        .doc(myReviewModel
+                                                            .reviewRequestId)
+                                                        .update({
+                                                      'rejectWitness': [
+                                                        model1.toJson()
+                                                      ]
+                                                    });
                                                     await FirebaseFirestore
                                                         .instance
                                                         .collection('users')
@@ -693,13 +693,50 @@ class DeletedTab extends StatelessWidget {
 
                 return GeneralHomeCard(
                   contractModelData: e,
-                  onPressed: (context) => _deletePressed(context, e),
+                  onPressed: (context) => _pressed(context, e),
                 );
               }).toList(),
             );
           }
           return const Center(child: CircularProgressIndicator());
         });
+  }
+
+  void _pressed(BuildContext context, ContractModel details) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => showDialogBox1(context, details));
+  }
+
+  void updateStatus(ContractModel details) async {
+    String status;
+    status = details.status != 'Delete' ? 'Delete' : 'Draft';
+    final updatedContract = {'status': status};
+    await contractRepository.update(details.id, updatedContract);
+  }
+
+  Widget showDialogBox1(BuildContext context, ContractModel details) {
+    String status = details.status;
+    return AlertDialog(
+      title: const Text('Are you Sure ?'),
+      content: const Text('Do you want to Delete this  Agreement?'),
+      actions: <Widget>[
+        TextButton(
+            child: status != 'Delete'
+                ? const Text('Delete')
+                : const Text('Restore'),
+            onPressed: () {
+              updateStatus(details);
+              Navigator.of(context).pop();
+            }),
+        TextButton(
+          child: const Text('Cancel'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
   }
 
   void _deletePressed(BuildContext context, ContractModel e) async {
@@ -783,14 +820,16 @@ class WitnessView extends StatelessWidget {
         if (snapshot.hasData) {
           final myUser = snapshot.data?.data();
           final localUser = LocalUser.fromJson(myUser!);
-
+          if (localUser.witnessScreenShow.isEmpty) {
+            return const Center(child: Text("No Contract"));
+          }
           return GridView.count(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             mainAxisSpacing: 5,
             crossAxisSpacing: 5,
             childAspectRatio: 2 / 3,
             crossAxisCount: 2,
-            children: localUser.witnessShowModel.map((element) {
+            children: localUser.witnessScreenShow.map((element) {
               return ShowWitness(
                 myContractId: element.contractID,
                 userId: element.contractIdUser,
@@ -834,13 +873,16 @@ class SignedView extends StatelessWidget {
           if (snapshot.hasData && snapshot.data != null) {
             final myUser = snapshot.data?.data();
             final localUser = LocalUser.fromJson(myUser!);
+            if (localUser.signedWitness.isEmpty) {
+              return const Center(child: Text("No Contract"));
+            }
             return GridView.count(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               mainAxisSpacing: 5,
               crossAxisSpacing: 5,
               childAspectRatio: 2 / 3,
               crossAxisCount: 2,
-              children: localUser.witness.map((e) {
+              children: localUser.signedWitness.map((e) {
                 return ShowWitness(
                     myContractId: e.contractID,
                     userId: e.contractIdUser,
@@ -986,9 +1028,11 @@ class ContractDetailTabScreen extends StatelessWidget {
 
           if (snapshot.hasData) {
             Map<String, dynamic> mydata = snapshot.data?.data() ?? {};
-            if (mydata.isEmpty) return Text("No contract");
+            if (mydata.isEmpty) return const Text("No Contract");
             final localuser = LocalUser.fromJson(mydata);
-
+            if (localuser.contractDetailTab.isEmpty) {
+              return const Center(child: Text("No Contract"));
+            }
             return GridView.count(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -1012,35 +1056,61 @@ class ContractDetailTabScreen extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (_) => ContractDetailScreen(
-                                        witness1: contractModel.contractDetail
-                                                ?.witness1?.witnessId ??
-                                            '',
-                                        witness2: contractModel.contractDetail
-                                                ?.witness2?.witnessId ??
-                                            '',
-                                        userCityTo:
-                                            contractModel.userCityTo ?? '',
-                                        warning:
-                                            contractModel.contractDetail?.warning ??
-                                                '',
-                                        userCityFrom:
-                                            contractModel.userCityFrom ?? '',
-                                        userAddressFrom:
-                                            contractModel.userAddressFrom ?? '',
-                                        userProvinceTo:
-                                            contractModel.userProvinceTo ?? '',
-                                        userCountryTo:
-                                            contractModel.userCountryTo ?? '',
-                                        userNameFrom:
-                                            contractModel.userNameFrom ?? '',
-                                        userNameTo: contractModel.userNameTo ?? '',
-                                        userAddressTo: '',
-                                        userCountryFrom: contractModel.userCountryFrom ?? '',
-                                        userProvinceFrom: contractModel.userProvinceFrom ?? '',
-                                        endDate: contractModel.contractEndDate ?? '',
-                                        userLocalityTo: contractModel.userLocalityTo ?? '',
-                                        userLocalityFrom: contractModel.userLocalityFrom ?? '',
-                                        startDate: contractModel.contractStartDate ?? '')));
+                                          witness1: contractModel.contractDetail
+                                                  ?.witness1?.witnessId ??
+                                              '',
+                                          witness2: contractModel.contractDetail
+                                                  ?.witness2?.witnessId ??
+                                              '',
+                                          userCityTo:
+                                              contractModel.userCityTo ?? '',
+                                          warning: contractModel
+                                                  .contractDetail?.warning ??
+                                              '',
+                                          userCityFrom:
+                                              contractModel.userCityFrom ?? '',
+                                          userAddressFrom:
+                                              contractModel.userAddressFrom ??
+                                                  '',
+                                          userProvinceTo:
+                                              contractModel.userProvinceTo ??
+                                                  '',
+                                          userCountryTo:
+                                              contractModel.userCountryTo ?? '',
+                                          userNameFrom:
+                                              contractModel.userNameFrom ?? '',
+                                          userNameTo:
+                                              contractModel.userNameTo ?? '',
+                                          userAddressTo: '',
+                                          userCountryFrom:
+                                              contractModel.userCountryFrom ??
+                                                  '',
+                                          userProvinceFrom:
+                                              contractModel.userProvinceFrom ??
+                                                  '',
+                                          endDate:
+                                              contractModel.contractEndDate ??
+                                                  '',
+                                          userLocalityTo:
+                                              contractModel.userLocalityTo ??
+                                                  '',
+                                          userLocalityFrom:
+                                              contractModel.userLocalityFrom ??
+                                                  '',
+                                          startDate:
+                                              contractModel.contractStartDate ??
+                                                  '',
+                                          witness2status: contractModel
+                                                  .contractDetail
+                                                  ?.witness1
+                                                  ?.witnessSigned ??
+                                              false,
+                                          witness1status: contractModel
+                                                  .contractDetail
+                                                  ?.witness2
+                                                  ?.witnessSigned ??
+                                              false,
+                                        )));
                           },
                           child: Card(
                             child: Column(

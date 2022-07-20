@@ -7,6 +7,8 @@ import 'package:fyp/screens/handyman/houehold_screeen.dart';
 import 'package:fyp/screens/home_screen/home_screen.dart';
 import 'package:fyp/screens/intro/intro_screen.dart';
 import 'package:fyp/screens/login_page/login_screen.dart';
+import 'package:fyp/screens/preview/preview_screen.dart';
+import 'package:fyp/screens/promise_agreement/component/SignatureScreen.dart';
 import 'package:fyp/screens/promise_agreement/component/additional_screen.dart';
 import 'package:fyp/screens/promise_agreement/component/penalties_screen.dart';
 import 'package:fyp/screens/promise_agreement/component/time_line.dart';
@@ -40,4 +42,6 @@ final Map<String, WidgetBuilder> routes = {
   SearchScreen.routeName: (context) => const SearchScreen(),
   WarningScreen.routeName: (context) => const WarningScreen(),
   ProfileScreen.routeName: (context) => const ProfileScreen(),
+  SignatureScreen.routeName: (context) => const SignatureScreen(),
+  PreviewScreen.routeName: (context) => const PreviewScreen(),
 };

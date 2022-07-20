@@ -9,7 +9,11 @@ part of 'local_user.dart';
 LocalUser _$LocalUserFromJson(Map<String, dynamic> json) => LocalUser(
       name: json['name'] as String,
       cnicNo: json['cnicNo'] as String,
-      witnessShowModel: (json['witnessShowModel'] as List<dynamic>?)
+      rejectWitness: (json['rejectWitness'] as List<dynamic>?)
+              ?.map((e) => WitnessShowModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      witnessScreenShow: (json['witnessScreenShow'] as List<dynamic>?)
               ?.map((e) => WitnessShowModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
@@ -20,7 +24,7 @@ LocalUser _$LocalUserFromJson(Map<String, dynamic> json) => LocalUser(
           const [],
       phoneNumber: json['phoneNumber'] as String,
       email: json['email'] as String,
-      witness: (json['witness'] as List<dynamic>?)
+      signedWitness: (json['signedWitness'] as List<dynamic>?)
               ?.map((e) => WitnessShowModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
@@ -49,11 +53,12 @@ Map<String, dynamic> _$LocalUserToJson(LocalUser instance) => <String, dynamic>{
       'signatureImage': instance.signatureImage,
       'contractId': instance.contractId.map((e) => e.toJson()).toList(),
       'comments': instance.comments.map((e) => e.toJson()).toList(),
+      'rejectWitness': instance.rejectWitness.map((e) => e.toJson()).toList(),
       'contractDetailTab':
           instance.contractDetailTab.map((e) => e.toJson()).toList(),
-      'witness': instance.witness.map((e) => e.toJson()).toList(),
-      'witnessShowModel':
-          instance.witnessShowModel.map((e) => e.toJson()).toList(),
+      'signedWitness': instance.signedWitness.map((e) => e.toJson()).toList(),
+      'witnessScreenShow':
+          instance.witnessScreenShow.map((e) => e.toJson()).toList(),
     };
 
 ReviewModel _$ReviewModelFromJson(Map<String, dynamic> json) => ReviewModel(
@@ -96,6 +101,7 @@ Map<String, dynamic> _$ReviewIDModelToJson(ReviewIDModel instance) =>
 WitnessSignedModel _$WitnessSignedModelFromJson(Map<String, dynamic> json) =>
     WitnessSignedModel(
       witnessId: json['witnessId'] as String,
+      senderId: json['senderId'] as String?,
       witnessSigned: json['witnessSigned'] as bool? ?? false,
     );
 
@@ -103,6 +109,7 @@ Map<String, dynamic> _$WitnessSignedModelToJson(WitnessSignedModel instance) =>
     <String, dynamic>{
       'witnessId': instance.witnessId,
       'witnessSigned': instance.witnessSigned,
+      'senderId': instance.senderId,
     };
 
 WitnessShowModel _$WitnessShowModelFromJson(Map<String, dynamic> json) =>

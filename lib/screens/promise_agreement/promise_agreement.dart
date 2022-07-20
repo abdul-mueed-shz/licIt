@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/locator.dart';
+import 'package:fyp/screens/home_screen/home_screen.dart';
 import 'package:fyp/screens/promise_agreement/component/time_line.dart';
 import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/screens/tab/tab_screen.dart';
 import 'package:fyp/util/constant.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/common_widget.dart';
@@ -76,7 +78,7 @@ class _PromiseAgreementState extends State<PromiseAgreement> {
               children: [
                 Expanded(
                   child: DeleteBacKFunctionality(
-                      iconData: Icons.keyboard_backspace, onTap: _deleteTap),
+                      iconData: Icons.keyboard_backspace, onTap: _backButton),
                 ),
                 const SizedBox(width: 5),
                 Expanded(
@@ -90,7 +92,6 @@ class _PromiseAgreementState extends State<PromiseAgreement> {
                           pref?.contractDetail?.executionDate == null) {
                         provider.clearTimeLineField();
                       }
-
                       Navigator.pushNamed(context, TimeLineScreen.routeName);
                     }
                   }),
@@ -110,42 +111,16 @@ class _PromiseAgreementState extends State<PromiseAgreement> {
   }
 
   void _deleteTap(BuildContext context) async {
-    Navigator.of(context).pop();
+    final provider = context.read<PromiseProvider>();
+   final isFieldEmpty= await provider.deleteStatus(context);
+    isFieldEmpty ?  Navigator.of(context).popUntil(ModalRoute.withName('/TabScreen')): Navigator.pop(context);
   }
+  void _backButton(BuildContext context)  =>
+     Navigator.pop(context);
+
 }
 
-class DeleteBacKFunctionality extends StatelessWidget {
-  final Color color;
-  final IconData iconData;
-  final double height;
-  final BuildContextCallback onTap;
-  const DeleteBacKFunctionality(
-      {Key? key,
-      this.color = Colors.green,
-      this.height = 50,
-      required this.iconData,
-      required this.onTap})
-      : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => onTap(context),
-      child: Container(
-        width: 150,
-        height: height,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          iconData,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-}
 
 enum Status { pending, active, delete, rejected, draft }
 

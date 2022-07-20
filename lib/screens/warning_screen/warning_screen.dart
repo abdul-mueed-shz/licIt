@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/screens/search/search_screen.dart';
+import 'package:fyp/util/my_slide_transition.dart';
 import 'package:fyp/widget/button.dart';
 
 import '../promise_agreement/promise_agreement.dart';
@@ -17,13 +18,36 @@ class _WarningScreenState extends State<WarningScreen> {
   final controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 100),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 4,
+      resizeToAvoidBottomInset:false,
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              alignment: Alignment.center,
+              width:double.infinity,decoration: const BoxDecoration(
+      borderRadius: BorderRadius.only(
+      bottomLeft: const Radius.circular(40.0),
+        bottomRight: Radius.circular(40.0)),
+      color: Colors.green,
+                    ),
+            child:  const Text(
+                  'LicIt.',
+                  style:  TextStyle(
+                color: Colors.white,    fontSize: 60,
+                    fontWeight: FontWeight.bold,
+
+                    //fontFamily:,
+                  ),
+                ),
+            ),
+          ),
+
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 100),
               child: TextFormField(
                 controller: controller,
                 maxLines: 10,
@@ -46,7 +70,10 @@ class _WarningScreenState extends State<WarningScreen> {
                 ),
               ),
             ),
-            Row(
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10,right: 10,bottom: 30),
+            child: Row(
               children: [
                 Expanded(
                   child: DeleteBacKFunctionality(
@@ -64,8 +91,10 @@ class _WarningScreenState extends State<WarningScreen> {
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+
+
+        ],
       ),
     );
   }

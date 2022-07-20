@@ -48,3 +48,36 @@ class MyElevatedButton extends StatelessWidget {
     );
   }
 }
+
+class DeleteBacKFunctionality extends StatelessWidget {
+  final Color color;
+  final IconData iconData;
+  final double height;
+  final BuildContextCallback onTap;
+  const DeleteBacKFunctionality(
+      {Key? key,
+        this.color = Colors.green,
+        this.height = 50,
+        required this.iconData,
+        required this.onTap})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => onTap(context),
+      child: Container(
+        width: 150,
+        height: height,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          iconData,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}

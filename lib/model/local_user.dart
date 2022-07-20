@@ -14,18 +14,20 @@ class LocalUser {
   final String? signatureImage;
   final List<ReviewIDModel> contractId;
   final List<CommentModel> comments;
+  final List<WitnessShowModel> rejectWitness;
   final List<ContractDetailTab> contractDetailTab;
-  final List<WitnessShowModel> witness;
-  final List<WitnessShowModel> witnessShowModel;
+  final List<WitnessShowModel> signedWitness;
+  final List<WitnessShowModel> witnessScreenShow;
 
   LocalUser(
       {required this.name,
       required this.cnicNo,
-      this.witnessShowModel = const [],
+      this.rejectWitness = const [],
+      this.witnessScreenShow = const [],
       this.contractDetailTab = const [],
       required this.phoneNumber,
       required this.email,
-      this.witness = const [],
+      this.signedWitness = const [],
       this.comments = const [],
       this.token,
       this.contractId = const [],
@@ -86,9 +88,11 @@ class ReviewIDModel {
 class WitnessSignedModel {
   final String witnessId;
   final bool witnessSigned;
+  final String? senderId;
 
   WitnessSignedModel({
     required this.witnessId,
+    this.senderId,
     this.witnessSigned = false,
   });
 

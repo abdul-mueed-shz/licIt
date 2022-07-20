@@ -7,11 +7,14 @@ import 'package:fyp/screens/general_template/general_template_dart.dart';
 import 'package:fyp/screens/promise_agreement/component/time_line.dart';
 import 'package:fyp/screens/promise_agreement/promise_agreement.dart';
 import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/screens/tab/tab_screen.dart';
 import 'package:fyp/util/my_slide_transition.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/common_widget.dart';
 import 'package:fyp/widget/radio_button.dart';
 import 'package:provider/provider.dart';
+
+import '../../../widget/gernal_text.dart';
 
 class PenaltiesScreen extends StatefulWidget {
   static const String routeName = '/PenaltiesScreen';
@@ -120,8 +123,10 @@ class _PenaltiesScreenState extends State<PenaltiesScreen> {
     Navigator.pushNamed(context, GeneralTemplate.routeName);
   }
 
-  void _deleteTap(BuildContext context) {
-    Navigator.of(context).pop();
+  void _deleteTap(BuildContext context) async{
+    final provider = context.read<PromiseProvider>();
+    final isFieldEmpty= await provider.deleteStatus(context);
+    isFieldEmpty ?  Navigator.of(context).popUntil(ModalRoute.withName('/TabScreen')): Navigator.pop(context);
   }
 
   void _back(BuildContext context) {

@@ -99,6 +99,7 @@ class _MyAppState extends State<MyApp> {
             child: FlutterEasyLoading(child: widget),
           );
         },
+
       ),
     );
   }

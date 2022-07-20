@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:fyp/screens/rental/rental_agreement.dart';
 import 'package:fyp/screens/rental/rental_provider.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/common_widget.dart';
 import 'package:fyp/widget/radio_button.dart';
 import 'package:fyp/widget/validator.dart';
 import 'package:provider/provider.dart';
+
+import '../../../widget/gernal_text.dart';
 
 class Utilities extends StatefulWidget {
   const Utilities({Key? key}) : super(key: key);

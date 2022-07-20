@@ -6,7 +6,9 @@ import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/radio_button.dart';
 import 'package:provider/provider.dart';
 
-import '../rental_agreement.dart';
+import '../../../widget/gernal_text.dart';
+import '../../promise_agreement/component/time_line.dart';
+
 
 class Assignment extends StatelessWidget {
   const Assignment({Key? key}) : super(key: key);

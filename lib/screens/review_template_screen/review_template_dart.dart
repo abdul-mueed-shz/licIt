@@ -217,7 +217,15 @@ class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
                         widget.witnessShow == false &&
                             !widget.witnessStatus2 &&
                             widget.selectedStatus == 'signed')
-                      MyElevatedButton('Click to Signed', onTap: _signedTap)
+                      MyElevatedButton('Click to Signed', onTap: _signedTap),
+                    const SizedBox(height: 10),
+                    if (widget.witnessShow == false &&
+                            !widget.witnessStatus1 &&
+                            widget.selectedStatus == 'signed' ||
+                        widget.witnessShow == false &&
+                            !widget.witnessStatus2 &&
+                            widget.selectedStatus == 'signed')
+                      MyElevatedButton('Reject', onTap: _rejectWitness)
                   ],
                 );
               },
@@ -329,6 +337,24 @@ class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
     final contractData = ContractModel.fromJson(review);
     if (!widget.witnessStatus1 &&
         contractData.contractDetail?.witness1?.witnessSigned == false) {
+      final myReview = await FirebaseFirestore.instance
+          .collection('reviews')
+          .doc(widget.contractID)
+          .get();
+      final reviewModel = myReview.data() ?? {};
+      final myReviewModel = ReviewModel.fromJson(reviewModel);
+      final reviewUser = await userRepository.get(storage.id ?? '');
+      final requestUserList = reviewUser?.signedWitness ?? [];
+      final model = requestUserList
+          .where((element) => element.contractID == myReviewModel.contractID)
+          .toList()
+          .first;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(storage.id)
+          .update({
+        'signedWitness': FieldValue.arrayRemove([model.toJson()])
+      });
       await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.reviewRequestID)
@@ -336,29 +362,30 @@ class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
           .doc(widget.contractID)
           .update({
         'contractDetail.witness1.witnessSigned': true,
+        'contractDetail.witness1.senderId': widget.receiverRequestId,
       });
+
+      Navigator.of(context).pop();
+    } else if (!widget.witnessStatus2 &&
+        contractData.contractDetail?.witness2?.witnessSigned == false) {
       final myReview = await FirebaseFirestore.instance
           .collection('reviews')
           .doc(widget.contractID)
           .get();
       final reviewModel = myReview.data() ?? {};
       final myReviewModel = ReviewModel.fromJson(reviewModel);
-      final model = WitnessShowModel(
-          contractName: widget.contractName ?? 'Promise',
-          contractID: widget.contractID,
-          user1: myReviewModel.requestName,
-          user2: myReviewModel.reviewName,
-          contractIdUser: widget.reviewRequestID);
+      final reviewUser = await userRepository.get(storage.id ?? '');
+      final requestUserList = reviewUser?.signedWitness ?? [];
+      final model = requestUserList
+          .where((element) => element.contractID == myReviewModel.contractID)
+          .toList()
+          .first;
       await FirebaseFirestore.instance
           .collection('users')
           .doc(storage.id)
           .update({
-        'witness': FieldValue.arrayRemove([model.toJson()])
+        'signedWitness': FieldValue.arrayRemove([model.toJson()])
       });
-      Navigator.of(context).pop();
-    } else if (!widget.witnessStatus2 &&
-        contractData.contractDetail?.witness2?.witnessSigned == false &&
-        contractData.contractDetail?.witness1?.witnessSigned == true) {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.reviewRequestID)
@@ -366,27 +393,79 @@ class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
           .doc(widget.contractID)
           .update({
         'contractDetail.witness2.witnessSigned': true,
+        'contractDetail.witness1.senderId': widget.reviewRequestID,
       });
-      final myReview = await FirebaseFirestore.instance
-          .collection('reviews')
-          .doc(widget.contractID)
-          .get();
-      final reviewModel = myReview.data() ?? {};
-      final myReviewModel = ReviewModel.fromJson(reviewModel);
-      final model = WitnessShowModel(
-          contractName: widget.contractName ?? 'Promise',
-          contractID: widget.contractID,
-          user1: myReviewModel.requestName,
-          user2: myReviewModel.reviewName,
-          contractIdUser: widget.reviewRequestID);
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(storage.id)
-          .update({
-        'witness': FieldValue.arrayRemove([model.toJson()])
-      });
+
       Navigator.of(context).pop();
     }
+  }
+
+  void _rejectWitness(BuildContext context) async {
+    final myReview = await FirebaseFirestore.instance
+        .collection('reviews')
+        .doc(widget.contractID)
+        .get();
+    final reviewModel = myReview.data() ?? {};
+    final myReviewModel = ReviewModel.fromJson(reviewModel);
+
+    final reviewUser = await userRepository.get(storage.id ?? '');
+    final requestUserList = reviewUser?.signedWitness ?? [];
+
+    final remove = requestUserList
+        .where((element) => element.contractID == myReviewModel.contractID)
+        .toList()
+        .first;
+
+    final contractModel = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(myReviewModel.reviewRequestId)
+        .collection('contract')
+        .doc(myReviewModel.contractID)
+        .get();
+    final myContractData = contractModel.data() ?? {};
+    final contractData = ContractModel.fromJson(myContractData);
+    if (contractData.contractDetail?.witness1?.senderId ==
+        myReviewModel.reviewRequestId) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(myReviewModel.reviewRequestId)
+          .collection('contract')
+          .doc(myReviewModel.contractID)
+          .update({
+        'contractDetail.witness1': null,
+      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(myReviewModel.reviewRequestId)
+          .update({
+        'witnessScreenShow': FieldValue.arrayUnion([remove.toJson()])
+      });
+    } else if (contractData.contractDetail?.witness2?.senderId ==
+        myReviewModel.receiverRequestId) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(myReviewModel.reviewRequestId)
+          .collection('contract')
+          .doc(myReviewModel.contractID)
+          .update({
+        'contractDetail.witness2': null,
+      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(myReviewModel.receiverRequestId)
+          .update({
+        'witnessScreenShow': FieldValue.arrayUnion([remove.toJson()])
+      });
+    }
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(storage.id)
+        .update({
+      'signedWitness': FieldValue.arrayRemove([remove.toJson()])
+    });
+
+    Navigator.of(context).pop();
   }
 }
 

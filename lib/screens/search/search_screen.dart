@@ -9,6 +9,7 @@ import 'package:fyp/screens/tab/tab_screen.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/hide_keyboard_on_background_tap.dart';
 import 'package:fyp/widget/validator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:vector_math/vector_math.dart' as math;
 
@@ -33,14 +34,36 @@ class _SearchScreenState extends State<SearchScreen> {
         key: key,
         child: HideKeyboardOnBackgroundTap(
           child: Scaffold(
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.zero,
+            resizeToAvoidBottomInset:false,
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    width:double.infinity,decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        bottomLeft:  Radius.circular(40.0),
+                        bottomRight: Radius.circular(40.0)),
+                    color: Colors.green,
+                  ),
+                    child:  const Text(
+                      'LicIt.',
+                      style:  TextStyle(
+                        color: Colors.white,    fontSize: 60,
+                        fontWeight: FontWeight.bold,
+
+                        //fontFamily:,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 100),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
                     child: TextFormField(
                       controller: controller,
                       maxLines: 1,
@@ -76,9 +99,12 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     ),
                   ),
-                  myButton()
-                ],
-              ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: myButton(),
+                ),
+              ],
             ),
           ),
         ),
@@ -105,6 +131,13 @@ class _SearchScreenState extends State<SearchScreen> {
       }
       if (user == 'User Exist') {
         final data = await userRepository.get(controller.text.trim());
+        EasyLoading.dismiss();
+        final confirmation =
+            await confirmDialog(context, controller.text.trim()) ?? false;
+        if (confirmation == false) {
+          return EasyLoading.showInfo('Try Again');
+        }
+        EasyLoading.show();
         final user1Data =
             await userRepository.get(storage.id ?? '3123456789123');
         final reviewIDModel = ReviewIDModel(
@@ -198,19 +231,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
       if (contractModelShowData.isEmpty) return;
       final contractModel = ContractModel.fromJson(contractModelShowData);
-      final witness = WitnessShowModel(
-          user1: review.requestName,
-          contractID: review.contractID,
-          contractIdUser: review.reviewRequestId,
-          contractName: review.contractName,
-          user2: review.reviewName);
-      final witnessShowModel = WitnessShowModel(
-          user1: review.reviewName,
-          contractID: review.contractID,
-          contractIdUser: review.reviewRequestId,
-          contractName: review.contractName,
-          witnessTabShow: true,
-          user2: review.requestName);
+      final reviewUser = await userRepository.get(review.reviewRequestId);
+      final requestUser = await userRepository.get(review.receiverRequestId);
+      final requestUserList = reviewUser?.witnessScreenShow ?? [];
+      final reviewUserList = requestUser?.witnessScreenShow ?? [];
 
       if (contractModel.contractDetail?.witness1?.witnessId == null) {
         await FirebaseFirestore.instance
@@ -220,13 +244,17 @@ class _SearchScreenState extends State<SearchScreen> {
             .doc(review.contractID)
             .update({
           'contractDetail.witness1.witnessId': userCnic,
+          'contractDetail.witness1.senderId': review.reviewRequestId,
         });
+        final showModel = requestUserList
+            .where((element) => element.contractID == review.contractID)
+            .toList()
+            .first;
         await userRepository.update(userCnic, {
-          'witness': [witness.toJson()],
+          'signedWitness': [showModel.toJson()],
         });
         await userRepository.update(storage.id ?? '3123456789123', {
-          'witnessShowModel':
-              FieldValue.arrayRemove([witnessShowModel.toJson()])
+          'witnessScreenShow': FieldValue.arrayRemove([showModel.toJson()])
         });
         await context.read<PromiseProvider>().send(
             myUser!.token!,
@@ -246,13 +274,17 @@ class _SearchScreenState extends State<SearchScreen> {
             .doc(review.contractID)
             .update({
           'contractDetail.witness2.witnessId': userCnic,
+          'contractDetail.witness2.senderId': review.receiverRequestId,
         });
+        final showModel = reviewUserList
+            .where((element) => element.contractID == review.contractID)
+            .toList()
+            .first;
         await userRepository.update(userCnic, {
-          'witness': [witness.toJson()],
+          'signedWitness': [showModel.toJson()],
         });
         await userRepository.update(storage.id ?? '3123456789123', {
-          'witnessShowModel':
-              FieldValue.arrayRemove([witnessShowModel.toJson()])
+          'witnessScreenShow': FieldValue.arrayRemove([showModel.toJson()])
         });
         await context.read<PromiseProvider>().send(
             myUser!.token!,
@@ -306,4 +338,53 @@ Future<void> updateFirebaseField(
     'contractId': FieldValue.arrayUnion(model),
     'contractDetailTab': FieldValue.arrayUnion([contractDetailTab.toJson()])
   });
+}
+
+Future<bool?> confirmDialog(BuildContext context, String confirmCnic) async {
+  final cnicController = TextEditingController();
+
+  return showGeneralDialog<bool>(
+    context: context,
+    pageBuilder: (ctx, a1, a2) {
+      return Container();
+    },
+    transitionBuilder: (ctx, a1, a2, child) {
+      return Transform.rotate(
+        angle: math.radians(a1.value * 360),
+        child: AlertDialog(
+          title: const Text("Confirmation Dialog"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Enter Cnic Number Again For Verification",
+                style: GoogleFonts.lato(
+                  fontSize: 13,
+                ),
+              ),
+              TextFormField(
+                controller: cnicController,
+                decoration: InputDecoration(hintText: confirmCnic),
+              )
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+                onPressed: () {
+                  if (cnicController.text.trim() == confirmCnic) {
+                    Navigator.pop(context, true);
+                  } else {
+                    Navigator.pop(context, false);
+                  }
+                },
+                child: const Text("Verify")),
+            TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancel"))
+          ],
+        ),
+      );
+    },
+    transitionDuration: const Duration(milliseconds: 300),
+  );
 }

@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/model/contract_model.dart';
+import 'package:fyp/screens/home_screen/home_screen.dart';
 import 'package:fyp/screens/promise_agreement/component/additional_screen.dart';
 import 'package:fyp/screens/promise_agreement/promise_agreement.dart';
 import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/screens/tab/tab_screen.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/date_time_field.dart';
 import 'package:fyp/widget/radio_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+
+import '../../../widget/gernal_text.dart';
 
 class TimeLineScreen extends StatefulWidget {
   static const String routeName = '/TimeLineScreen';
@@ -74,7 +78,7 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
                         Expanded(
                           child: DeleteBacKFunctionality(
                               iconData: Icons.keyboard_backspace,
-                              onTap: _deleteTap),
+                              onTap: _backButton),
                         ),
                         const SizedBox(width: 5),
                         Expanded(
@@ -120,9 +124,13 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
     Navigator.push(
         context, MaterialPageRoute(builder: (_) => const AdditionalScreen()));
   }
+  void _backButton(BuildContext context)  =>
+      Navigator.pop(context);
+  void _deleteTap(BuildContext context) async {
+    final provider = context.read<PromiseProvider>();
+    final isFieldEmpty= await provider.deleteStatus(context);
+    isFieldEmpty ? Navigator.of(context).popUntil(ModalRoute.withName('/TabScreen')): Navigator.pop(context);
 
-  void _deleteTap(BuildContext context) {
-    Navigator.of(context).pop();
   }
 
   @override
@@ -138,26 +146,3 @@ class _TimeLineScreenState extends State<TimeLineScreen> {
   }
 }
 
-class GeneralText extends StatelessWidget {
-  final String title;
-  final double size;
-  final TextAlign? align;
-  final FontWeight fontWeight;
-
-  const GeneralText(
-      {Key? key,
-      this.fontWeight = FontWeight.normal,
-      required this.title,
-      this.size = 30,
-      this.align})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title,
-      textAlign: align,
-      style: GoogleFonts.lato(fontSize: size, fontWeight: fontWeight),
-    );
-  }
-}

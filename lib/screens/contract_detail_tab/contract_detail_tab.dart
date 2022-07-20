@@ -21,6 +21,8 @@ class ContractDetailScreen extends StatefulWidget {
   final String userProvinceTo;
   final String witness1;
   final String witness2;
+  final bool witness1status;
+  final bool witness2status;
 
   const ContractDetailScreen({
     Key? key,
@@ -41,6 +43,8 @@ class ContractDetailScreen extends StatefulWidget {
     required this.userLocalityTo,
     required this.userProvinceFrom,
     required this.userProvinceTo,
+    required this.witness1status,
+    required this.witness2status,
   }) : super(key: key);
 
   @override
@@ -154,11 +158,22 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text(widget.witness1.isNotEmpty
-                              ? widget.witness1
-                              : ''),
-                          Text(
-                              widget.witness2.isNotEmpty ? widget.witness2 : '')
+                          Column(
+                            children: [
+                              Text(widget.witness1.isNotEmpty &&
+                                      widget.witness1status == true
+                                  ? widget.witness1
+                                  : ''),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              Text(widget.witness2.isNotEmpty &&
+                                      widget.witness2status == true
+                                  ? widget.witness2
+                                  : ''),
+                            ],
+                          )
                         ],
                       )
                     ],

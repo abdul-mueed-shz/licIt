@@ -37,9 +37,9 @@ class _SignatureBoardState extends State<SignatureBoard> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.green,title: const Text("Signature Board"),centerTitle: true,),
+      appBar: AppBar(backgroundColor: Colors.green,title: const Text("Signature Board"),centerTitle: true),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[

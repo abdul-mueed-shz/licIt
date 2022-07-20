@@ -242,9 +242,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 title: 'Password',
                 validator: Validator.validatePassword,
                 password: true),
-            const SizedBox(
-              height: 5.0,
-            ),
+            const SizedBox(height: 5.0),
             GestureDetector(
               onTap: () async {
                 final cnicImage = await pickImage(context);
@@ -261,6 +259,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: _identityCardWidget(),
               ),
             ),
+            MyElevatedButton('Face Picture', onTap: (_) async {
+              final pickedImage =
+                  await ImagePicker().pickImage(source: ImageSource.camera);
+              if (pickedImage != null) {
+                print(pickedImage.path);
+              }
+            }),
 
             Container(
               margin: const EdgeInsets.only(top: 10),

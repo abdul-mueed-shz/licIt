@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fyp/screens/promise_agreement/component/time_line.dart';
 import 'package:fyp/util/my_slide_transition.dart';
 
+import '../screens/handyman/component/compensation.dart';
+
 class RadioListWidget extends StatefulWidget {
   final ValueChanged<String?> selectedRadioValue;
   final List<String> radioList;

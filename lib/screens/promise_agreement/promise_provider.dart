@@ -8,6 +8,7 @@ import 'package:fyp/model/contract_model.dart';
 import 'package:fyp/screens/general_template/general_template_dart.dart';
 import 'package:fyp/screens/promise_agreement/component/additional_screen.dart';
 import 'package:fyp/screens/promise_agreement/component/penalties_screen.dart';
+import 'package:fyp/screens/tab/tab_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
@@ -376,4 +377,18 @@ class PromiseProvider with ChangeNotifier {
 
     templateUserEndYear.text = duration.toString();
   }
+
+
+  Future<bool> deleteStatus(BuildContext context)async{
+    final contractModel = storage.contract;
+    if( contractModel != null && contractModel.id.isNotEmpty){
+      final updatedContract = {'status': 'Delete'};
+      await contractRepository.update(contractModel.id, updatedContract);
+      return true;
+    }  else{
+      return false;
+
+    }
+
+}
 }

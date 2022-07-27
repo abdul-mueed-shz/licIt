@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
-import 'package:fyp/screens/preview/preview_screen.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/screens/rent_agreement/rent_agreement_preview_screen.dart';
+import 'package:fyp/screens/rent_agreement/rental_provider.dart';
+import 'package:fyp/screens/tab/tab_screen.dart';
+import 'package:fyp/widget/button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -22,17 +23,16 @@ class _RentAgreementScreenState extends State<RentAgreementScreen> {
   @override
   void initState() {
     final pref = storage.contract;
-    final provider = context.read<PromiseProvider>();
-    if (pref?.contractStartDate != null && pref?.contractEndDate != null) {
-      provider.updateTemplateField();
+    final provider = context.read<RentalProvider>();
+    if (pref?.rentalAgreementUserNameTO != null &&
+        pref?.rentalAgreementUserNameFrom != null) {
+      provider.updateGeneralTextField();
     }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<PromiseProvider>();
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
           bottom: false,
@@ -53,7 +53,34 @@ class _RentAgreementScreenState extends State<RentAgreementScreen> {
                                 color: Colors.green,
                                 letterSpacing: 2)),
                         const SizedBox(height: 60),
-                        FormatFillInTheBlanks(),
+                        const FormatFillInTheBlanks(),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DeleteBacKFunctionality(
+                                  iconData:
+                                      Icons.keyboard_double_arrow_left_outlined,
+                                  onTap: _homeBack),
+                            ),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              child: DeleteBacKFunctionality(
+                                  iconData: Icons.keyboard_backspace,
+                                  onTap: _deleteTap),
+                            ),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              flex: 5,
+                              child: MyElevatedButton('Next', onTap: _tap),
+                            ),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              child: DeleteBacKFunctionality(
+                                  iconData: Icons.delete, onTap: _deleteTap),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   );
@@ -64,22 +91,22 @@ class _RentAgreementScreenState extends State<RentAgreementScreen> {
     );
   }
 
+  void _homeBack(BuildContext context) {
+    Navigator.popUntil(context, ModalRoute.withName(TabScreen.routeName));
+  }
+
   void _deleteTap(BuildContext context) {}
 
   void _tap(BuildContext context) async {
-    final provider = context.read<PromiseProvider>();
+    final provider = context.read<RentalProvider>();
+    provider.updateGeneralTextField();
     if (formDataKey.currentState!.validate()) {
-      if (provider.selectedStartDateTemplate == null) {
-        return EasyLoading.showError("Starting Date Can't Be Null");
-      }
-      final years = int.parse(provider.templateUserEndYear.text);
-      final calculateDays = years * 365;
-
-      final date = provider.selectedStartDateTemplate ?? DateTime.now();
-      final endDate = date.add(Duration(days: calculateDays));
-      provider.updateGeneralTextField(endDate.toString());
-      Timer(const Duration(seconds: 2),
-          () => Navigator.pushNamed(context, PreviewScreen.routeName));
+      final contract = storage.contract;
+      Timer(
+          const Duration(seconds: 2),
+          () => Navigator.pushNamed(
+              context, RentAgreementPreviewScreen.routeName,
+              arguments: contract));
     }
   }
 }
@@ -99,6 +126,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
       fontWeight: FontWeight.bold);
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<RentalProvider>();
     return RichText(
       text: TextSpan(
         style: const TextStyle(
@@ -121,7 +149,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
                 child: SecretWord(
                     answer: "lahore",
                     answerLength: 15,
-                    callBack: (String value) => {print(value)},
+                    controller: provider.rentalAgreementLocation,
                     answerHint: 'Lahore')),
           ),
           TextSpan(
@@ -135,7 +163,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
                 child: SecretWord(
                   answer: "lahore",
                   answerLength: 30,
-                  callBack: (String value) => {print(value)},
+                  controller: provider.rentalAgreementDate,
                   answerHint: ' 3rd March 2022',
                 )),
           ),
@@ -147,7 +175,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
                 child: SecretWord(
                   answer: "lahore",
                   answerLength: 15,
-                  callBack: (String value) => {print(value)},
+                  controller: provider.rentalAgreementUserNameFrom,
                   answerHint: ' Rafay',
                 )),
           ),
@@ -164,7 +192,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 8,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementGender,
               answerHint: ' Male',
             ),
           ),
@@ -177,7 +205,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 6,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementAge,
               answerHint: ' 20',
             ),
           ),
@@ -194,7 +222,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementResiding,
               answerHint: ' itu',
             ),
           ),
@@ -203,7 +231,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 14,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserAddressFrom,
               answerHint: ' Model Town',
             ),
           ),
@@ -216,7 +244,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserCityFrom,
               answerHint: ' Lahore',
             ),
           ),
@@ -225,7 +253,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 10,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserAreaCodeFrom,
               answerHint: ' 550005',
             ),
           ),
@@ -238,7 +266,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserCountryFrom,
               answerHint: ' Pakistan',
             ),
           ),
@@ -251,7 +279,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 20,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserCnicFrom,
               answerHint: ' 32635123368712351',
             ),
           ),
@@ -277,7 +305,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserNameTO,
               answerHint: ' Moeed',
             ),
           ),
@@ -294,7 +322,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 8,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserGender,
               answerHint: ' Male',
             ),
           ),
@@ -307,7 +335,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 6,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserAgeTo,
               answerHint: ' 20',
             ),
           ),
@@ -324,7 +352,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserResidingTo,
               answerHint: ' itu',
             ),
           ),
@@ -333,7 +361,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserAddressTo,
               answerHint: ' Model Town',
             ),
           ),
@@ -346,7 +374,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserCityTo,
               answerHint: ' Lahore',
             ),
           ),
@@ -355,7 +383,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 10,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserAreaCodeTo,
               answerHint: ' 550005',
             ),
           ),
@@ -368,7 +396,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserCountryTo,
               answerHint: ' Pakistan',
             ),
           ),
@@ -381,7 +409,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 20,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserCnicTo,
               answerHint: ' 32635123368712351',
             ),
           ),
@@ -403,7 +431,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouse,
               answerHint: ' Independent',
             ),
           ),
@@ -413,7 +441,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouseBlock,
               answerHint: ' R Block',
             ),
           ),
@@ -426,7 +454,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouseAddress,
               answerHint: ' Model Town',
             ),
           ),
@@ -439,7 +467,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouseCity,
               answerHint: ' Lahore',
             ),
           ),
@@ -452,7 +480,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 10,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouseAreaCode,
               answerHint: ' 32423',
             ),
           ),
@@ -465,7 +493,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 10,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouseCountry,
               answerHint: ' Pak',
             ),
           ),
@@ -478,7 +506,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 16,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouseBedroom,
               answerHint: ' 2 bedrooms',
             ),
           ),
@@ -487,7 +515,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 16,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouseBathroom,
               answerHint: ' 1 bathroom',
             ),
           ),
@@ -496,7 +524,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 13,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouseBalconey,
               answerHint: ' 1 balcony',
             ),
           ),
@@ -505,7 +533,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 20,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouseCarPorch,
               answerHint: ' 1 car parking space',
             ),
           ),
@@ -514,7 +542,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 15,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHousekitchen,
               answerHint: ' 1kitchen',
             ),
           ),
@@ -527,7 +555,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "lahore",
               answerLength: 20,
-              callBack: (String value) => {print(value)},
+              controller: provider.rentalAgreementUserHouseAnyFitting,
               answerHint: ' inbuilt fittings',
             ),
           ),
@@ -547,12 +575,13 @@ class SecretWord extends StatelessWidget {
   final int answerLength;
   final String answerHint;
   final double answerWidth;
-  final Function callBack;
+
+  final TextEditingController controller;
 
   SecretWord({
     Key? key,
     required this.answer,
-    required this.callBack,
+    required this.controller,
     required this.answerLength,
     this.answerHint = '_',
     this.answerWidth = 10,
@@ -569,6 +598,7 @@ class SecretWord extends StatelessWidget {
         //  margin: const EdgeInsets.only(right: 10, left: 10),
         child: TextFormField(
             maxLines: null,
+            controller: controller,
             cursorColor: Colors.cyanAccent,
             cursorRadius: const Radius.circular(12.0),
             cursorWidth: 2.0,
@@ -581,7 +611,6 @@ class SecretWord extends StatelessWidget {
             //textAlign: TextAlign.left,
             autofocus: true,
             onChanged: (text) {
-              callBack(text);
               value = text;
             },
             decoration: InputDecoration(

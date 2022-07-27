@@ -4,7 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/model/contract_model.dart';
 import 'package:fyp/model/local_user.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/model/promise_provider.dart';
 import 'package:fyp/screens/tab/tab_screen.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/hide_keyboard_on_background_tap.dart';
@@ -34,7 +34,7 @@ class _SearchScreenState extends State<SearchScreen> {
         key: key,
         child: HideKeyboardOnBackgroundTap(
           child: Scaffold(
-            resizeToAvoidBottomInset:false,
+            resizeToAvoidBottomInset: false,
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,16 +42,17 @@ class _SearchScreenState extends State<SearchScreen> {
                 Expanded(
                   child: Container(
                     alignment: Alignment.center,
-                    width:double.infinity,decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        bottomLeft:  Radius.circular(40.0),
-                        bottomRight: Radius.circular(40.0)),
-                    color: Colors.green,
-                  ),
-                    child:  const Text(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(40.0),
+                          bottomRight: Radius.circular(40.0)),
+                      color: Colors.green,
+                    ),
+                    child: const Text(
                       'LicIt.',
-                      style:  TextStyle(
-                        color: Colors.white,    fontSize: 60,
+                      style: TextStyle(
+                        color: Colors.white, fontSize: 60,
                         fontWeight: FontWeight.bold,
 
                         //fontFamily:,
@@ -63,7 +64,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 Expanded(
                   flex: 2,
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: TextFormField(
                       controller: controller,
                       maxLines: 1,

@@ -7,8 +7,9 @@ part 'contract_model.g.dart';
 class ContractModel {
   final String id;
   final String contractName;
-  final String content;
   final String status;
+  final String contractStatus;
+  final bool isReviewState;
   final String savedPlace;
   final String? contractStartDate;
   final String? contractEndDate;
@@ -24,16 +25,91 @@ class ContractModel {
   final String? userCityTo;
   final String? userProvinceTo;
   final String? userCountryTo;
-
+  final String? jobUserName;
+  final String? jobAddress;
+  final String? jobName;
+  final String? jobCity;
+  final String? jobProvince;
+  final String? jobPostalCode;
+  final String? jobCountry;
+  final String? jobAgreementTitle;
+  final String? rentalAgreementLocation;
+  final String? rentalAgreementDate;
+  final String? rentalAgreementUserNameFrom;
+  final String? rentalAgreementGender;
+  final String? rentalAgreementAge;
+  final String? rentalAgreementResiding;
+  final String? rentalAgreementUserAddressFrom;
+  final String? rentalAgreementUserCityFrom;
+  final String? rentalAgreementUserAreaCodeFrom;
+  final String? rentalAgreementUserCountryFrom;
+  final String? rentalAgreementUserCnicFrom;
+  final String? rentalAgreementUserNameTO;
+  final String? rentalAgreementUserGender;
+  final String? rentalAgreementUserAgeTo;
+  final String? rentalAgreementUserResidingTo;
+  final String? rentalAgreementUserAddressTo;
+  final String? rentalAgreementUserCityTo;
+  final String? rentalAgreementUserAreaCodeTo;
+  final String? rentalAgreementUserCountryTo;
+  final String? rentalAgreementUserCnicTo;
+  final String? rentalAgreementUserHouse;
+  final String? rentalAgreementUserHouseBlock;
+  final String? rentalAgreementUserHouseAddress;
+  final String? rentalAgreementUserHouseCity;
+  final String? rentalAgreementUserHouseAreaCode;
+  final String? rentalAgreementUserHouseCountry;
+  final String? rentalAgreementUserHouseBedroom;
+  final String? rentalAgreementUserHouseBathroom;
+  final String? rentalAgreementUserHouseBalconey;
+  final String? rentalAgreementUserHouseCarPorch;
+  final String? rentalAgreementUserHousekitchen;
+  final String? rentalAgreementUserHouseAnyFitting;
   final ContractDetail? contractDetail;
 
   ContractModel({
     required this.id,
-    required this.contractName,
-    required this.content,
-    required this.savedPlace,
-    required this.status,
-    this.contractDetail,
+    this.jobUserName,
+    this.rentalAgreementLocation,
+    this.rentalAgreementDate,
+    this.rentalAgreementUserNameFrom,
+    this.rentalAgreementGender,
+    this.rentalAgreementAge,
+    this.rentalAgreementResiding,
+    this.rentalAgreementUserAddressFrom,
+    this.rentalAgreementUserCityFrom,
+    this.rentalAgreementUserAreaCodeFrom,
+    this.rentalAgreementUserCountryFrom,
+    this.rentalAgreementUserCnicFrom,
+    this.rentalAgreementUserNameTO,
+    this.rentalAgreementUserGender,
+    this.rentalAgreementUserAgeTo,
+    this.rentalAgreementUserResidingTo,
+    this.rentalAgreementUserAddressTo,
+    this.rentalAgreementUserCityTo,
+    this.rentalAgreementUserAreaCodeTo,
+    this.rentalAgreementUserCountryTo,
+    this.rentalAgreementUserCnicTo,
+    this.rentalAgreementUserHouse,
+    this.rentalAgreementUserHouseBlock,
+    this.rentalAgreementUserHouseAddress,
+    this.rentalAgreementUserHouseCity,
+    this.rentalAgreementUserHouseAreaCode,
+    this.rentalAgreementUserHouseCountry,
+    this.rentalAgreementUserHouseBedroom,
+    this.rentalAgreementUserHouseBathroom,
+    this.rentalAgreementUserHouseBalconey,
+    this.rentalAgreementUserHouseCarPorch,
+    this.rentalAgreementUserHousekitchen,
+    this.rentalAgreementUserHouseAnyFitting,
+    this.jobAddress,
+    this.jobName,
+    this.contractStatus = 'Promise',
+    this.jobCity,
+    this.jobProvince,
+    this.jobPostalCode,
+    this.jobCountry,
+    this.jobAgreementTitle,
     this.contractStartDate,
     this.contractEndDate,
     this.userNameFrom,
@@ -48,60 +124,53 @@ class ContractModel {
     this.userCityTo,
     this.userProvinceTo,
     this.userCountryTo,
+    required this.contractName,
+    this.isReviewState = false,
+    required this.savedPlace,
+    required this.status,
+    this.contractDetail,
   });
   factory ContractModel.fromJson(Map<String, dynamic> json) =>
       _$ContractModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$ContractModelToJson(this);
-
-  @override
-  String toString() {
-    return 'ContractModel{id: $id, contractName: $contractName, content: $content, status: $status, savedPlace: $savedPlace, contractStartDate: $contractStartDate, contractEndDate: $contractEndDate, userNameFrom: $userNameFrom, userNameTo: $userNameTo, userAddressFrom: $userAddressFrom, userAddressTo: $userAddressTo, userLocalityTo: $userLocalityTo, userLocalityFrom: $userLocalityFrom, userCityFrom: $userCityFrom, userProvinceFrom: $userProvinceFrom, userCountryFrom: $userCountryFrom, userCityTo: $userCityTo, userProvinceTo: $userProvinceTo, userCountryTo: $userCountryTo, contractDetail: $contractDetail}';
-  }
 }
 
 @JsonSerializable()
 class ContractDetail {
-  final String? name;
-  final String? contractPerson;
-  final String? reason;
-  final String? executionDate;
-  final String? endDate;
   final String? warning;
-  final String? additionalCondition;
-  final String? isCompletionRadio;
-  final String? additionalConditionsRadio;
-  final String? haveTodo;
-  final String? violateContractRadio;
-  final String? amountPenalty;
   final bool showSendOption;
   final WitnessSignedModel? witness1;
   final WitnessSignedModel? witness2;
 
-  ContractDetail(
-      {this.name,
-      this.showSendOption = false,
-      this.witness1,
-      this.witness2,
-      this.contractPerson,
-      this.reason,
-      this.warning,
-      this.executionDate,
-      this.endDate,
-      this.additionalCondition,
-      this.isCompletionRadio,
-      this.additionalConditionsRadio,
-      this.haveTodo,
-      this.violateContractRadio,
-      this.amountPenalty});
+  ContractDetail({
+    this.showSendOption = false,
+    this.witness1,
+    this.witness2,
+    this.warning,
+  });
 
   factory ContractDetail.fromJson(Map<String, dynamic> json) =>
       _$ContractDetailFromJson(json);
 
   Map<String, dynamic> toJson() => _$ContractDetailToJson(this);
+}
 
-  @override
-  String toString() {
-    return 'ContractDetail{name: $name, contractPerson: $contractPerson, reason: $reason, executionDate: $executionDate, endDate: $endDate, additionalCondition: $additionalCondition, isCompletionRadio: $isCompletionRadio, additionalConditionsRadio: $additionalConditionsRadio, haveTodo: $haveTodo, violateContractRadio: $violateContractRadio, amountPenalty: $amountPenalty}';
+enum Status { pending, active, delete, rejected, draft }
+
+extension StatusValue on Status {
+  String get value {
+    switch (this) {
+      case Status.active:
+        return 'Active';
+      case Status.pending:
+        return 'Pending';
+      case Status.delete:
+        return 'Delete';
+      case Status.rejected:
+        return 'Rejected';
+      case Status.draft:
+        return 'Draft';
+    }
   }
 }

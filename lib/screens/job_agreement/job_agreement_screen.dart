@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
-import 'package:fyp/screens/preview/preview_screen.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/screens/job_agreement/job_provider.dart';
+import 'package:fyp/screens/tab/tab_screen.dart';
+import 'package:fyp/screens/warning_screen/warning_screen.dart';
+import 'package:fyp/widget/button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -22,16 +23,16 @@ class _JobAgreementScreenState extends State<JobAgreementScreen> {
   @override
   void initState() {
     final pref = storage.contract;
-    final provider = context.read<PromiseProvider>();
-    if (pref?.contractStartDate != null && pref?.contractEndDate != null) {
-      provider.updateTemplateField();
+    final provider = context.read<JobProvider>();
+    if (pref?.jobAgreementTitle != null && pref?.jobAddress != null) {
+      provider.updateJobField();
     }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<PromiseProvider>();
+    final provider = context.read<JobProvider>();
     return Scaffold(
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -63,9 +64,7 @@ class _JobAgreementScreenState extends State<JobAgreementScreen> {
                             afterBlankText: '',
                             hint: 'Abdul Moeed Shahbaz',
                             blankSize: 20,
-                            callBack: (String value) {
-                              print(value);
-                            })),
+                            controller: provider.jobUserName)),
                     Row(
                       children: [
                         FormatFillInTheBlanks(
@@ -73,17 +72,13 @@ class _JobAgreementScreenState extends State<JobAgreementScreen> {
                             hint: 'Street Number 54',
                             afterBlankText: ',',
                             blankSize: 18,
-                            callBack: (String value) {
-                              print(value);
-                            }),
+                            controller: provider.jobAddress),
                         FormatFillInTheBlanks(
                             beforeBlankText: '',
                             hint: 'Jaloo',
                             afterBlankText: ',',
                             blankSize: 10,
-                            callBack: (String value) {
-                              print(value);
-                            }),
+                            controller: provider.jobName),
                       ],
                     ),
                     Row(
@@ -93,25 +88,19 @@ class _JobAgreementScreenState extends State<JobAgreementScreen> {
                             hint: 'Lahore',
                             afterBlankText: ',',
                             blankSize: 10,
-                            callBack: (String value) {
-                              print(value);
-                            }),
+                            controller: provider.jobCity),
                         FormatFillInTheBlanks(
                             beforeBlankText: '',
                             hint: 'Punjab',
                             afterBlankText: ',',
                             blankSize: 10,
-                            callBack: (String value) {
-                              print(value);
-                            }),
+                            controller: provider.jobProvince),
                         FormatFillInTheBlanks(
                             beforeBlankText: '',
                             hint: '55056',
                             afterBlankText: ',',
                             blankSize: 10,
-                            callBack: (String value) {
-                              print(value);
-                            }),
+                            controller: provider.jobPostalCode),
                       ],
                     ),
                     Align(
@@ -121,9 +110,7 @@ class _JobAgreementScreenState extends State<JobAgreementScreen> {
                             hint: 'Pakistan',
                             afterBlankText: ',',
                             blankSize: 10,
-                            callBack: (String value) {
-                              print(value);
-                            })),
+                            controller: provider.jobCountry)),
                     const SizedBox(height: 20),
                     const Align(
                         alignment: Alignment.topLeft,
@@ -139,20 +126,53 @@ class _JobAgreementScreenState extends State<JobAgreementScreen> {
                         afterBlankText:
                             'on the following terms and conditions.',
                         blankSize: 7,
-                        callBack: (String value) {
-                          print(value);
-                        }),
-                    const SizedBox(height: 5),
-                    FormatFillInTheBlanks(
-                        beforeBlankText: 'Our Company is ',
-                        afterBlankText: ',',
-                        hint: 'An FYP ka aidea',
-                        blankSize: 25,
-                        callBack: (String value) {
-                          print(value);
-                        }),
-                    const Text(
-                        'This offer is subject to the fulfillment of the pre-contractual conditions of you being found medically fit and verification done by the Company of the accuracy of testimonials and information provided by you.')
+                        controller: provider.jobAgreementTitle),
+                    const SizedBox(height: 30),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text('Our Company is An FYP ka aidea \n',
+                          textAlign: TextAlign.left,
+                          style: GoogleFonts.spartan(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              letterSpacing: 2)),
+                    ),
+                    const Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                          'This offer is subject to the fulfillment of the pre-contractual conditions of you being found medically fit and verification done by the Company of the accuracy of testimonials and information provided by you.',
+                          style: TextStyle(
+                              fontSize: 12,
+                              height: 1.5,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DeleteBacKFunctionality(
+                              iconData:
+                                  Icons.keyboard_double_arrow_left_outlined,
+                              onTap: _homeBack),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: DeleteBacKFunctionality(
+                              iconData: Icons.keyboard_backspace,
+                              onTap: _deleteTap),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          flex: 5,
+                          child: MyElevatedButton('Next', onTap: _tap),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: DeleteBacKFunctionality(
+                              iconData: Icons.delete, onTap: _deleteTap),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -166,20 +186,16 @@ class _JobAgreementScreenState extends State<JobAgreementScreen> {
   void _deleteTap(BuildContext context) {}
 
   void _tap(BuildContext context) async {
-    final provider = context.read<PromiseProvider>();
+    final provider = context.read<JobProvider>();
     if (formDataKey.currentState!.validate()) {
-      if (provider.selectedStartDateTemplate == null) {
-        return EasyLoading.showError("Starting Date Can't Be Null");
-      }
-      final years = int.parse(provider.templateUserEndYear.text);
-      final calculateDays = years * 365;
-
-      final date = provider.selectedStartDateTemplate ?? DateTime.now();
-      final endDate = date.add(Duration(days: calculateDays));
-      provider.updateGeneralTextField(endDate.toString());
+      provider.updateGeneralTextField();
       Timer(const Duration(seconds: 2),
-          () => Navigator.pushNamed(context, PreviewScreen.routeName));
+          () => Navigator.pushNamed(context, WarningScreen.routeName));
     }
+  }
+
+  void _homeBack(BuildContext context) {
+    Navigator.popUntil(context, ModalRoute.withName(TabScreen.routeName));
   }
 }
 
@@ -187,11 +203,11 @@ class FormatFillInTheBlanks extends StatefulWidget {
   final String beforeBlankText;
   final String afterBlankText;
   final int blankSize;
-  final Function callBack;
+  final TextEditingController controller;
   final String hint;
   const FormatFillInTheBlanks(
       {required this.beforeBlankText,
-      required this.callBack,
+      required this.controller,
       required this.afterBlankText,
       this.hint = '_',
       required this.blankSize,
@@ -225,7 +241,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             child: SecretWord(
               answer: "pakistan",
               answerLength: widget.blankSize,
-              callBack: (String value) => widget.callBack(value),
+              controller: widget.controller,
               answerHint: widget.hint,
             ),
           ),
@@ -245,12 +261,12 @@ class SecretWord extends StatelessWidget {
   final int answerLength;
   final String answerHint;
   final double answerWidth;
-  final Function callBack;
+  final TextEditingController controller;
 
   SecretWord({
     Key? key,
     required this.answer,
-    required this.callBack,
+    required this.controller,
     required this.answerLength,
     this.answerHint = '_',
     this.answerWidth = 10,
@@ -260,7 +276,7 @@ class SecretWord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
         //alignment: Alignment.bottomCenter,
         width: answerWidth * answerLength,
         height: null,
@@ -279,10 +295,7 @@ class SecretWord extends StatelessWidget {
             ),
             //textAlign: TextAlign.left,
             autofocus: true,
-            onChanged: (text) {
-              callBack(text);
-              value = text;
-            },
+            controller: controller,
             decoration: InputDecoration(
               //labelText: 'Name *',
               border: InputBorder.none,

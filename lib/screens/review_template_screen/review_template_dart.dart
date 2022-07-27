@@ -7,7 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/model/contract_model.dart';
 import 'package:fyp/model/local_user.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/model/promise_provider.dart';
 import 'package:fyp/screens/review_template_screen/pdf.dart';
 import 'package:fyp/screens/search/search_screen.dart';
 import 'package:fyp/util/constant.dart';
@@ -18,6 +18,8 @@ import 'package:provider/provider.dart';
 
 class ReviewTemplateScreen extends StatefulWidget {
   final String startDate;
+  final ContractModel contractModel;
+  final bool isShowReviewButton;
   final String contractID;
   final String? contractName;
   final String endDate;
@@ -48,7 +50,9 @@ class ReviewTemplateScreen extends StatefulWidget {
   const ReviewTemplateScreen({
     Key? key,
     required this.startDate,
+    this.isShowReviewButton = false,
     this.witnessShow = false,
+    required this.contractModel,
     this.witnessStatus1 = false,
     this.witnessStatus2 = false,
     required this.endDate,
@@ -94,13 +98,6 @@ class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           automaticallyImplyLeading: false,
-          centerTitle: true,
-          title: Text(
-            "Licit Agreement",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.lato(
-                fontSize: 30, color: Colors.green, fontWeight: FontWeight.bold),
-          ),
           elevation: 0,
           actions: [
             IconButton(
@@ -150,129 +147,18 @@ class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // Text(
-                    //   "Licit Agreement",
-                    //   textAlign: TextAlign.center,
-                    //   style: GoogleFonts.lato(
-                    //       fontSize: 40,
-                    //       color: Colors.green,
-                    //       fontWeight: FontWeight.bold),
-                    // ),
-                    widget.warning.isNotEmpty
-                        ? Text(
-                            widget.warning,
-                            style: GoogleFonts.lato(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          )
-                        : const SizedBox(),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 30),
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: Colors.green.withOpacity(0.8),
-                          border: Border.all(color: Colors.black),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(20))),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 5),
-                          const MyTextWidget(
-                            title: 'This Agreement is Entered into on',
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                            title: 'Start Date',
-                            content: widget.startDate.formattedDate,
-                          ),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'Between M/s',
-                              content: widget.userNameFrom),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'addressed at',
-                              content: widget.userAddressFrom),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'Locality ',
-                              content: widget.userLocalityFrom),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'City ', content: widget.userCityFrom),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'Province ',
-                              content: widget.userProvinceFrom),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'Country ',
-                              content: widget.userCountryFrom),
-                          const SizedBox(height: 5),
-                          const MyTextWidget(
-                              title:
-                                  'here in after referred to as the Disclosing party'),
-                          Text(
-                            '',
-                            textAlign: TextAlign.left,
-                            style: GoogleFonts.lato(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          ContractRichTextSpan(
-                            title: 'End Date',
-                            content: widget.endDate.formattedDate,
-                          ),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'Between M/s', content: widget.userNameTo),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'addressed at',
-                              content: widget.userAddressTo),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'Locality ',
-                              content: widget.userLocalityTo),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'City ', content: widget.userCityTo),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'Province ',
-                              content: widget.userProvinceTo),
-                          const SizedBox(height: 5),
-                          ContractRichTextSpan(
-                              title: 'Country ', content: widget.userCountryTo),
-                          const SizedBox(height: 5),
-                          const MyTextWidget(
-                              title:
-                                  'Receiving party collectively  here in after referred to as the'),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Column(children: [
-                                Image.network(widget.reviewImage,
-                                    fit: BoxFit.contain,
-                                    width: 100,
-                                    height: 100),
-                                Text(widget.userNameFrom),
-                              ]),
-                              Column(children: [
-                                Image.network(widget.requestImage,
-                                    fit: BoxFit.contain,
-                                    width: 100,
-                                    height: 100),
-                                Text(widget.userNameTo),
-                              ]),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    if (widget.contractModel.contractStatus == 'Promise')
+                      MyPreviewScreen(contractModel: widget.contractModel),
+                    if (widget.contractModel.contractStatus == 'Handy')
+                      MyHandyPreview(contractModel: widget.contractModel),
                     const SizedBox(height: 20),
-
+                    if (widget.isShowReviewButton)
+                      Text(
+                        "Change Are Requested To Contract User",
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.lato(
+                            fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
                     if (currentID == widget.receiverRequestId &&
                         provider.isShow == false &&
                         widget.witnessShow == false &&
@@ -327,6 +213,14 @@ class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
                   }
                   setState(() => isOnTab = false);
                   final data = controller.text.trim();
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(widget.reviewRequestID)
+                      .collection('contract')
+                      .doc(widget.contractID)
+                      .update({
+                    'isReviewState': true,
+                  });
                   final userData =
                       await userRepository.get(widget.reviewRequestID);
                   final user2 =
@@ -340,6 +234,7 @@ class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
                       userData?.token ?? '',
                       'Changes Required $data',
                       '${user2?.name ?? ''} comment on contract');
+                  setState(() => check = false);
                   controller.clear();
                   EasyLoading.showSuccess('Your Message have been send');
 
@@ -362,25 +257,27 @@ class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            child: MyElevatedButton(
-              'Signed',
-              onTap: (context) async {
-                final update = {
-                  'user2Signed': true,
-                };
-                await FirebaseFirestore.instance
-                    .collection('reviews')
-                    .doc(widget.contractID)
-                    .update(update);
-                await userRepository
-                    .update(widget.reviewRequestID, {'status': 'witness'});
-                await userRepository
-                    .update(widget.receiverRequestId, {'status': 'witness'});
-                context.read<PromiseProvider>().signed();
-              },
-            ),
-          ),
+          widget.isShowReviewButton
+              ? const SizedBox()
+              : Expanded(
+                  child: MyElevatedButton(
+                    'Signed',
+                    onTap: (context) async {
+                      final update = {
+                        'user2Signed': true,
+                      };
+                      await FirebaseFirestore.instance
+                          .collection('reviews')
+                          .doc(widget.contractID)
+                          .update(update);
+                      await userRepository.update(
+                          widget.reviewRequestID, {'status': 'witness'});
+                      await userRepository.update(
+                          widget.receiverRequestId, {'status': 'witness'});
+                      context.read<PromiseProvider>().signed();
+                    },
+                  ),
+                ),
           const SizedBox(width: 7),
           Expanded(
               child:
@@ -642,3 +539,166 @@ class ContractRichTextSpan extends StatelessWidget {
     );
   }
 }
+
+class MyPreviewScreen extends StatelessWidget {
+  final ContractModel contractModel;
+  const MyPreviewScreen({Key? key, required this.contractModel})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Container(
+          alignment: Alignment.center,
+          margin: const EdgeInsets.all(20),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  'Non-Disclosure\nConfidently Agreement',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.spartan(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                      letterSpacing: 2),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'THIS AGREEMENT is made and executed at (${contractModel.userCityFrom}) on ( ${getDate()}) by and between ( ${contractModel.userNameFrom} ) years, ( ${contractModel.userAddressFrom} ), (${contractModel.userCityFrom}), ........... (550005), (${contractModel.userProvinceFrom} here in after jointly and severally called the "Landlord”, which expression shall include his heirs, legal representatives, successors and assigns).',
+                  style: GoogleFonts.spartan(
+                      height: 2,
+                      fontSize: 12,
+                      color: Colors.black,
+                      wordSpacing: 2,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.justify,
+                ),
+                const Text('AND'),
+                Text(
+                  ' (${contractModel.userNameTo}), having permanent address ), ( ${contractModel.userAddressTo} ), (${contractModel.userCityFrom}),.... ......,(544594), (${contractModel.userProvinceFrom} hereinafter called the “Tenant", which expression shall include his legal representatives, successors and assigns).',
+                  style: GoogleFonts.spartan(
+                      height: 2,
+                      fontSize: 12,
+                      color: Colors.black,
+                      wordSpacing: 2,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.justify,
+                ),
+                Text(
+                  'WHEREAS the Landlord is the absolute owner of the Independent House situated at (R Block), (Model Town), (Lahore), ...................., (32423), (Pak), consisting of (2 bedrooms), (1 bathroom), (1 balcony),(1 car parking space), (1kitchen) and inbuilt fittings & fixtures and inventory of the equipments as detailed in the annexure, hereinafter referred to as "Leased Premises".',
+                  style: GoogleFonts.spartan(
+                      height: 2,
+                      fontSize: 12,
+                      color: Colors.black,
+                      wordSpacing: 2,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.justify,
+                ),
+                Text(
+                    'additional info :${contractModel.contractDetail?.warning}',
+                    textAlign: TextAlign.left,
+                    style: GoogleFonts.lato(
+                        fontSize: 18, fontWeight: FontWeight.w500))
+              ]),
+        ),
+      ),
+    );
+  }
+
+  String getDate() {
+    String date = contractModel.contractStartDate ?? '';
+    print(date);
+    final dateTime = DateTime.parse(date);
+    final formattedDate = "${dateTime.day}-${dateTime.month}-${dateTime.year}";
+    return formattedDate;
+  }
+}
+
+class MyHandyPreview extends StatelessWidget {
+  final ContractModel contractModel;
+  const MyHandyPreview({Key? key, required this.contractModel})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        alignment: Alignment.center,
+        margin: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              'Job Offer and Employment Contract',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.spartan(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                  letterSpacing: 2),
+            ),
+            const SizedBox(height: 28),
+            Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  'Private and confidential',
+                  style: style,
+                )),
+            const SizedBox(height: 30),
+            Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  contractModel.jobUserName ?? '',
+                  style: style,
+                )),
+            const SizedBox(height: 10),
+            Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  '${contractModel.jobAddress ?? ''}, ${contractModel.jobName ?? ''}, ${contractModel.jobCity ?? ''}, ${contractModel.jobProvince ?? ''}, ${contractModel.jobPostalCode ?? ''}, ${contractModel.jobCountry ?? ''}',
+                  style: style,
+                )),
+            const SizedBox(height: 10),
+            Align(
+                alignment: Alignment.topLeft,
+                child: Text('Offer of Employment', style: style)),
+            const SizedBox(height: 10),
+            Align(
+                alignment: Alignment.topLeft,
+                child: Text('Dear,', style: style)),
+            Text(
+              'With reference to your application for employment and the subsequent interview you had with us, we are pleased to offer you employment with   (${contractModel.userCityFrom})',
+              style: style,
+              textAlign: TextAlign.justify,
+            ),
+            Align(
+                alignment: Alignment.topLeft,
+                child: Text('on the following terms and conditions.',
+                    style: style)),
+            const SizedBox(height: 5),
+            Align(
+                alignment: Alignment.topLeft,
+                child: Text('Our Company is An FYP ka aidea', style: style)),
+            Text(
+              ' This offer is subject to the fulfillment of the pre-contractual conditions of you being found medically fit and verification done by the Company of the accuracy of testimonials and information provided by you.',
+              style: style,
+              textAlign: TextAlign.justify,
+            ),
+            Text(contractModel.contractDetail?.warning == null
+                ? ''
+                : 'additional info : ${contractModel.contractDetail?.warning}')
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+final style = GoogleFonts.spartan(
+    height: 2,
+    fontSize: 12,
+    color: Colors.black,
+    wordSpacing: 2,
+    fontWeight: FontWeight.bold);

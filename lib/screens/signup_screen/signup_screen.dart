@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:crypt/crypt.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/model/local_user.dart';
+import 'package:fyp/model/promise_provider.dart';
 import 'package:fyp/screens/login_page/login_screen.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
 import 'package:fyp/screens/signup_screen/signature_board.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/common_widget.dart';
@@ -28,13 +29,14 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  CameraController? controller;
   Color greenColor = const Color(0xFF00AF19);
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
   final cnicNoController = TextEditingController();
   final phoneNumberController = TextEditingController();
-  File? cnicImageFile, signatureImageFile;
+  File? cnicImageFile, signatureImageFile, frontPic;
   bool isLoading = false;
 
   Future<String?> upLoadImage(String userId, File image,
@@ -127,6 +129,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<File?> pickImage(context) async {
     final pickedImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      return File(pickedImage.path);
+    } else {
+      print('NO IMAGE Selected');
+      return null;
+    }
+  }
+
+  Future<File?> frontFaceCamera(context) async {
+    final pickedImage = await ImagePicker().pickImage(
+        source: ImageSource.camera, preferredCameraDevice: CameraDevice.front);
     if (pickedImage != null) {
       return File(pickedImage.path);
     } else {
@@ -259,13 +272,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: _identityCardWidget(),
               ),
             ),
-            MyElevatedButton('Face Picture', onTap: (_) async {
-              final pickedImage =
-                  await ImagePicker().pickImage(source: ImageSource.camera);
-              if (pickedImage != null) {
-                print(pickedImage.path);
-              }
-            }),
+            frontPic == null
+                ? MyElevatedButton('Face Picture', onTap: (_) async {
+                    final file = await frontFaceCamera(context);
+                    frontPic = file;
+                    setState(() {});
+                  })
+                : Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                          filterQuality: FilterQuality.high,
+                          fit: BoxFit.cover,
+                          image: FileImage(frontPic!)),
+                    ),
+                  ),
 
             Container(
               margin: const EdgeInsets.only(top: 10),

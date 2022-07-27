@@ -2,25 +2,28 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:fyp/locator.dart';
+import 'package:fyp/model/contract_model.dart';
 import 'package:fyp/screens/repository/storage/prefs_storage.dart';
 import 'package:fyp/screens/warning_screen/warning_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RentAgreementPreviewScreen extends StatefulWidget {
-  static const String routeName = '/PreviewScreen';
+  static const String routeName = '/RentAgreementPreviewScreen';
   const RentAgreementPreviewScreen({Key? key}) : super(key: key);
 
   @override
-  State<RentAgreementPreviewScreen> createState() => _RentAgreementPreviewScreenState();
+  State<RentAgreementPreviewScreen> createState() =>
+      _RentAgreementPreviewScreenState();
 }
 
-class _RentAgreementPreviewScreenState extends State<RentAgreementPreviewScreen> {
-  final contractModel = storage.contract;
+class _RentAgreementPreviewScreenState
+    extends State<RentAgreementPreviewScreen> {
   String cnic = PrefStorage.instance.id ?? '';
 
   @override
   Widget build(BuildContext context) {
+    final contractModel =
+        ModalRoute.of(context)?.settings.arguments as ContractModel;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.green,
@@ -56,7 +59,7 @@ class _RentAgreementPreviewScreenState extends State<RentAgreementPreviewScreen>
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'THIS AGREEMENT is made and executed at  (${contractModel?.userCityFrom}) on ( ${getDate()}) by and between ( ${contractModel?.userNameFrom} ) years, ( ${contractModel?.userAddressFrom} ), (${contractModel?.userCityFrom}), ........... (550005), (${contractModel?.userProvinceFrom}) and having ID card No. ${cnic}. (hereinafter jointly and severally called the "Landlord”, which expression shall include his heirs, legal representatives, successors and assigns).',
+                  'THIS AGREEMENT is made and executed at  (${contractModel.userCityFrom}) on ( ${getDate(contractModel)}) by and between ( ${contractModel.userNameFrom} ) years, ( ${contractModel.userAddressFrom} ), (${contractModel.userCityFrom}), ........... (550005), (${contractModel.userProvinceFrom}) and having ID card No. ${cnic}. (hereinafter jointly and severally called the "Landlord”, which expression shall include his heirs, legal representatives, successors and assigns).',
                   style: GoogleFonts.spartan(
                       height: 2,
                       fontSize: 12,
@@ -67,7 +70,7 @@ class _RentAgreementPreviewScreenState extends State<RentAgreementPreviewScreen>
                 ),
                 const Text('AND'),
                 Text(
-                  ' (${contractModel?.userNameTo}), having permanent address ), ( ${contractModel?.userAddressTo} ), (${contractModel?.userCityFrom}),.... ......,(544594), (${contractModel?.userProvinceFrom}) and having ID card No. ${cnic}. (hereinafter called the “Tenant", which expression shall include his legal representatives, successors and assigns).',
+                  ' (${contractModel.userNameTo}), having permanent address ), ( ${contractModel.userAddressTo} ), (${contractModel.userCityFrom}),.... ......,(544594), (${contractModel.userProvinceFrom}) and having ID card No. ${cnic}. (hereinafter called the “Tenant", which expression shall include his legal representatives, successors and assigns).',
                   style: GoogleFonts.spartan(
                       height: 2,
                       fontSize: 12,
@@ -92,8 +95,8 @@ class _RentAgreementPreviewScreenState extends State<RentAgreementPreviewScreen>
         ));
   }
 
-  String getDate() {
-    String date = contractModel?.contractStartDate ?? '';
+  String getDate(ContractModel contractModel) {
+    String date = contractModel.contractStartDate ?? '';
     print(date);
     final dateTime = DateTime.parse(date);
     final formattedDate = "${dateTime.day}-${dateTime.month}-${dateTime.year}";

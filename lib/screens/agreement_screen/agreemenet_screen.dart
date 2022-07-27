@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/model/contract_create_model.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/model/promise_provider.dart';
+import 'package:fyp/screens/job_agreement/job_provider.dart';
+import 'package:fyp/screens/rent_agreement/rental_provider.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -37,12 +39,14 @@ class _AgreementScreenState extends State<AgreementScreen> {
           Text(
             modal.title,
             textAlign: TextAlign.left,
-            style: GoogleFonts.lato(fontSize: 16 ,color:Colors.grey),
+            style: GoogleFonts.lato(fontSize: 16, color: Colors.grey),
           ),
           const Spacer(),
           MyElevatedButton('Next Button', onTap: (_) async {
             await storage.removeUser();
             context.read<PromiseProvider>().clearAllData();
+            context.read<JobProvider>().clearAllJobData();
+            context.read<RentalProvider>().clearAllData();
             Navigator.pushNamed(context, modal.routeName,
                 arguments: modal.name);
           }),

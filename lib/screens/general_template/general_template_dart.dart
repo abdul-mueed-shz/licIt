@@ -1,10 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
-import 'package:fyp/screens/preview/preview_screen.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/model/promise_provider.dart';
+import 'package:fyp/screens/tab/tab_screen.dart';
+import 'package:fyp/screens/warning_screen/warning_screen.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/common_widget.dart';
 import 'package:fyp/widget/date_time_field.dart';
@@ -66,7 +65,7 @@ class _GeneralTemplateState extends State<GeneralTemplate> {
                             child: Row(
                               children: [
                                 Text(
-                                  'This Agreement Date is:   ',
+                                  'This Agreement Date is Entered into onto:   ',
                                   maxLines: 1,
                                   style: GoogleFonts.spartan(
                                       fontSize: 10,
@@ -169,7 +168,7 @@ class _GeneralTemplateState extends State<GeneralTemplate> {
                         Padding(
                           padding: const EdgeInsets.only(top: 50),
                           child: Text(
-                            "here in after refered to as the disclosing party",
+                            "here in after referred to as the disclosing party",
                             style: GoogleFonts.spartan(
                                 fontSize: 11, fontWeight: FontWeight.w400),
                           ),
@@ -284,6 +283,13 @@ class _GeneralTemplateState extends State<GeneralTemplate> {
                           children: [
                             Expanded(
                               child: DeleteBacKFunctionality(
+                                  iconData:
+                                      Icons.keyboard_double_arrow_left_outlined,
+                                  onTap: _homeBack),
+                            ),
+                            const SizedBox(width: 5),
+                            Expanded(
+                              child: DeleteBacKFunctionality(
                                   iconData: Icons.keyboard_backspace,
                                   onTap: _deleteTap),
                             ),
@@ -313,6 +319,9 @@ class _GeneralTemplateState extends State<GeneralTemplate> {
   }
 
   void _deleteTap(BuildContext context) {}
+  void _homeBack(BuildContext context) {
+    Navigator.popUntil(context, ModalRoute.withName(TabScreen.routeName));
+  }
 
   void _tap(BuildContext context) async {
     final provider = context.read<PromiseProvider>();
@@ -326,8 +335,7 @@ class _GeneralTemplateState extends State<GeneralTemplate> {
       final date = provider.selectedStartDateTemplate ?? DateTime.now();
       final endDate = date.add(Duration(days: calculateDays));
       provider.updateGeneralTextField(endDate.toString());
-      Timer(const Duration(seconds: 2),
-          () => Navigator.pushNamed(context, PreviewScreen.routeName));
+      Navigator.pushNamed(context, WarningScreen.routeName);
     }
   }
 }

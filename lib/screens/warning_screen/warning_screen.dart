@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fyp/locator.dart';
-import 'package:fyp/screens/search/search_screen.dart';
+import 'package:fyp/screens/job_agreement/job_agreement_preview_screen.dart';
+import 'package:fyp/screens/preview/preview_screen.dart';
+import 'package:fyp/screens/tab/tab_screen.dart';
 import 'package:fyp/widget/button.dart';
 
 class WarningScreen extends StatefulWidget {
@@ -25,7 +29,7 @@ class _WarningScreenState extends State<WarningScreen> {
               width: double.infinity,
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
-                    bottomLeft: const Radius.circular(40.0),
+                    bottomLeft: Radius.circular(40.0),
                     bottomRight: Radius.circular(40.0)),
                 color: Colors.green,
               ),
@@ -74,6 +78,12 @@ class _WarningScreenState extends State<WarningScreen> {
               children: [
                 Expanded(
                   child: DeleteBacKFunctionality(
+                      iconData: Icons.keyboard_double_arrow_left_outlined,
+                      onTap: _homeBack),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: DeleteBacKFunctionality(
                       iconData: Icons.keyboard_backspace, onTap: _deleteTap),
                 ),
                 const SizedBox(width: 5),
@@ -95,18 +105,30 @@ class _WarningScreenState extends State<WarningScreen> {
   }
 
   void _deleteTap(BuildContext context) {}
+  void _homeBack(BuildContext context) {
+    Navigator.popUntil(context, ModalRoute.withName(TabScreen.routeName));
+  }
 
   void _tap(BuildContext context) async {
     if (controller.text.isNotEmpty) {
       await contractRepository.update(storage.contract?.id ?? '3123456789123', {
         'contractDetail.warning': controller.text.trim(),
-        'savedPlace': WarningScreen.routeName,
       });
     }
-    final contractDataModel =
-        await contractRepository.get(storage.contract?.id ?? '3123456789123');
-    if (contractDataModel?.contractDetail?.showSendOption == true) return;
-    Navigator.pushNamed(context, SearchScreen.routeName);
+    if (storage.contract?.contractStatus == 'Promise') {
+      final contract = storage.contract;
+      Timer(
+          const Duration(seconds: 2),
+          () => Navigator.pushNamed(context, PreviewScreen.routeName,
+              arguments: contract));
+    } else if (storage.contract?.contractStatus == 'Handy') {
+      final contract = storage.contract;
+      Timer(
+          const Duration(seconds: 2),
+          () => Navigator.pushNamed(
+              context, JobAgreementPreviewScreen.routeName,
+              arguments: contract));
+    }
   }
 
   @override

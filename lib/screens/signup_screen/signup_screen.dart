@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:async/async.dart';
+import 'package:camera/camera.dart';
 import 'package:crypt/crypt.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -7,14 +10,17 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/model/local_user.dart';
+import 'package:fyp/model/my_response_model.dart';
+import 'package:fyp/model/promise_provider.dart';
 import 'package:fyp/screens/login_page/login_screen.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
 import 'package:fyp/screens/signup_screen/signature_board.dart';
 import 'package:fyp/widget/button.dart';
 import 'package:fyp/widget/common_widget.dart';
 import 'package:fyp/widget/hide_keyboard_on_background_tap.dart';
 import 'package:fyp/widget/validator.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -28,13 +34,14 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  CameraController? controller;
   Color greenColor = const Color(0xFF00AF19);
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
   final cnicNoController = TextEditingController();
   final phoneNumberController = TextEditingController();
-  File? cnicImageFile, signatureImageFile;
+  File? cnicImageFile, signatureImageFile, frontPic;
   bool isLoading = false;
 
   Future<String?> upLoadImage(String userId, File image,
@@ -127,6 +134,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<File?> pickImage(context) async {
     final pickedImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      return File(pickedImage.path);
+    } else {
+      print('NO IMAGE Selected');
+      return null;
+    }
+  }
+
+  Future<File?> frontFaceCamera(context) async {
+    final pickedImage = await ImagePicker().pickImage(
+        source: ImageSource.camera, preferredCameraDevice: CameraDevice.front);
     if (pickedImage != null) {
       return File(pickedImage.path);
     } else {
@@ -259,13 +277,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: _identityCardWidget(),
               ),
             ),
-            MyElevatedButton('Face Picture', onTap: (_) async {
-              final pickedImage =
-                  await ImagePicker().pickImage(source: ImageSource.camera);
-              if (pickedImage != null) {
-                print(pickedImage.path);
-              }
-            }),
+            frontPic == null
+                ? MyElevatedButton('Face Picture', onTap: (_) async {
+                    final file = await frontFaceCamera(context);
+                    frontPic = file;
+                    setState(() {});
+                  })
+                : Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                          filterQuality: FilterQuality.high,
+                          fit: BoxFit.cover,
+                          image: FileImage(frontPic!)),
+                    ),
+                  ),
 
             Container(
               margin: const EdgeInsets.only(top: 10),
@@ -313,7 +339,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       isLoading = true;
     });
-    if (checkFields() && signatureImageFile != null && cnicImageFile != null) {
+    if (checkFields() &&
+        signatureImageFile != null &&
+        cnicImageFile != null &&
+        frontPic != null) {
       EasyLoading.show();
       Fluttertoast.showToast(
           msg: "Please Wait We create the user ", // message
@@ -321,83 +350,139 @@ class _SignUpScreenState extends State<SignUpScreen> {
           gravity: ToastGravity.BOTTOM, // location
           timeInSecForIosWeb: 1 // duration
           );
-      final checkValidation =
-          await userRepository.checkExist(cnicNoController.text);
-      if (checkValidation == 'User Exist') {
-        EasyLoading.dismiss();
+      final statusCode = await callApi(cnicImageFile!, frontPic!);
+      if (statusCode?.code != 200) {
         setState(() {
           isLoading = false;
+          frontPic == null;
         });
-        EasyLoading.showError("User is Already exist");
+        return EasyLoading.showError(
+            statusCode?.message ?? 'Some Thing Happen');
+      } else if (statusCode?.code == 200 && statusCode?.message == 'success') {
+        final checkValidation =
+            await userRepository.checkExist(cnicNoController.text);
+        if (checkValidation == 'User Exist') {
+          EasyLoading.dismiss();
+          setState(() {
+            isLoading = false;
+          });
+          EasyLoading.showError("User is Already exist");
 
-        return;
-      } else if (checkValidation == 'no user Found') {
-        final token = await context
-            .read<PromiseProvider>()
-            .getDeviceTokenToSendNotification();
+          return;
+        } else if (checkValidation == 'no user Found') {
+          final token = await context
+              .read<PromiseProvider>()
+              .getDeviceTokenToSendNotification();
 
-        String passwordHashing =
-            Crypt.sha256(passwordController.text).toString();
-        print("my hash password is $passwordHashing");
-        final sign = await upLoadImage(
-            cnicNoController.text.trim(),
-            signatureImageFile ??
-                File(
-                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
-                ),
-            type: 'signature');
-        final cnic = await upLoadImage(
-            cnicNoController.text.trim(),
-            cnicImageFile ??
-                File(
-                  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
-                ),
-            type: 'cnic');
-        final localUser = LocalUser(
-            name: nameController.text,
-            cnicNo: cnicNoController.text,
-            phoneNumber: phoneNumberController.text,
-            email: emailController.text,
-            password: passwordHashing,
-            cnicImageUrl: cnic,
-            signatureImage: sign,
-            token: token);
-        await userRepository.add(localUser).then((value) {
-          nameController.clear();
-          cnicNoController.clear();
-          phoneNumberController.clear();
-          emailController.clear();
-          passwordController.clear();
-          cnicImageFile = null;
-          signatureImageFile = null;
+          String passwordHashing =
+              Crypt.sha256(passwordController.text).toString();
+          print("my hash password is $passwordHashing");
+          final sign = await upLoadImage(
+              cnicNoController.text.trim(),
+              signatureImageFile ??
+                  File(
+                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
+                  ),
+              type: 'signature');
+          final cnic = await upLoadImage(
+              cnicNoController.text.trim(),
+              cnicImageFile ??
+                  File(
+                    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
+                  ),
+              type: 'cnic');
+          final localUser = LocalUser(
+              name: nameController.text,
+              cnicNo: cnicNoController.text,
+              phoneNumber: phoneNumberController.text,
+              email: emailController.text,
+              password: passwordHashing,
+              cnicImageUrl: cnic,
+              signatureImage: sign,
+              token: token);
+          await userRepository.add(localUser).then((value) {
+            nameController.clear();
+            cnicNoController.clear();
+            phoneNumberController.clear();
+            emailController.clear();
+            passwordController.clear();
+            cnicImageFile = null;
+            signatureImageFile = null;
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const LoginScreen(),
-            ),
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LoginScreen(),
+              ),
+            );
+            return EasyLoading.showSuccess("User  Created Successfully");
+          }).catchError(
+            (error) {
+              EasyLoading.dismiss();
+              setState(() {
+                isLoading = false;
+              });
+              return EasyLoading.showError(error);
+            },
           );
-          return EasyLoading.showSuccess("User  Created Successfully");
-        }).catchError(
-          (error) {
-            EasyLoading.dismiss();
-            setState(() {
-              isLoading = false;
-            });
-            return EasyLoading.showError(error);
-          },
-        );
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+          return EasyLoading.showError(checkValidation);
+        }
       } else {
         setState(() {
           isLoading = false;
         });
-        return EasyLoading.showError(checkValidation);
+        return EasyLoading.showError("Please Fill all the Field");
       }
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      return EasyLoading.showError("Please Fill all the Field");
     }
+  }
+
+  static Future<MyApiResponse?> callApi(File cnic, File face) async {
+    // open a bytestream
+
+    MyApiResponse? myResponse;
+    final cnicStream = http.ByteStream(DelegatingStream.typed(cnic.openRead()));
+    // get file length
+    final cnicLength = await cnic.length();
+
+    // multipart that takes file
+    final cnicFile = http.MultipartFile('images', cnicStream, cnicLength,
+        filename: path.basename(cnic.path));
+
+    // open a bytestream
+    final faceStream = http.ByteStream(DelegatingStream.typed(face.openRead()));
+    // get file length
+    final faceLength = await face.length();
+
+    // multipart that takes file
+    final faceFile = http.MultipartFile('images', faceStream, faceLength,
+        filename: path.basename(face.path));
+
+    // string to uri
+    final uri = Uri.parse("https://licit-fyp.herokuapp.com/cnic/photo");
+
+    // create multipart request
+    final request = http.MultipartRequest("POST", uri);
+
+    // add file to multipart
+    request.files.add(cnicFile);
+    request.files.add(faceFile);
+
+    // send
+    final response = await request.send();
+    final res = await http.Response.fromStream(response);
+
+    if (response.statusCode == 200) {
+      return MyApiResponse(message: 'success', code: res.statusCode);
+    } else if (response.statusCode == 400) {
+      final result = jsonDecode(res.body);
+      myResponse = MyApiResponse.fromJson(result);
+      return myResponse;
+    }
+
+    return myResponse;
   }
 }

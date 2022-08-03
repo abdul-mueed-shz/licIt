@@ -29,7 +29,7 @@ class CustomTextField extends StatelessWidget {
       obscureText: password,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
-        errorStyle: TextStyle(fontSize: 10),
+        errorStyle: const TextStyle(fontSize: 10),
         labelText: title,
         labelStyle: TextStyle(
           //fontFamily: ,

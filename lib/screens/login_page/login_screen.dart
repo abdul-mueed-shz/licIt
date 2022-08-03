@@ -2,8 +2,8 @@ import 'package:crypt/crypt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
+import 'package:fyp/model/promise_provider.dart';
 import 'package:fyp/screens/forgot_password/forgot_password.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
 import 'package:fyp/screens/signup_screen/signup_screen.dart';
 import 'package:fyp/screens/tab/tab_screen.dart';
 import 'package:fyp/util/constant.dart';
@@ -147,11 +147,13 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 25.0,
         ),
         //FOR LOGIN
-        BottomButtons(title:'LogIn',onTap:_onLogin),
+        BottomButtons(title: 'LogIn', onTap: _onLogin),
         const SizedBox(
           height: 25.0,
         ),
-        BottomButtons(title:'Sign Up',onTap:(_)=> Navigator.pushNamed(context, SignUpScreen.routeName) ),
+        BottomButtons(
+            title: 'Sign Up',
+            onTap: (_) => Navigator.pushNamed(context, SignUpScreen.routeName)),
       ],
     );
   }
@@ -202,25 +204,25 @@ class _LoginScreenState extends State<LoginScreen> {
 class BottomButtons extends StatelessWidget {
   final String title;
   final BuildContextCallback onTap;
-  const BottomButtons({required this.title, required this.onTap,Key? key}) : super(key: key);
+  const BottomButtons({required this.title, required this.onTap, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-  const  Color greenColor = Color(0xFF00AF19);
+    const Color greenColor = Color(0xFF00AF19);
     return GestureDetector(
-      onTap: ()=>onTap(context),
+      onTap: () => onTap(context),
       child: MySlideTransition(
         offset: const Offset(-0.3, 0),
         duration: 1000,
         child: Container(
-          margin: const EdgeInsets.only(left: 70,right: 70),
+          margin: const EdgeInsets.only(left: 70, right: 70),
           alignment: Alignment.center,
           height: 56.0,
           width: 120,
           decoration: BoxDecoration(
-              color: greenColor,
-              borderRadius: BorderRadius.circular(20)),
-          child:  Center(
+              color: greenColor, borderRadius: BorderRadius.circular(20)),
+          child: Center(
             child: Text(title,
                 style: const TextStyle(
                   color: Colors.white,

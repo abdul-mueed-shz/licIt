@@ -4,14 +4,12 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
 import 'package:fyp/model/contract_model.dart';
 import 'package:fyp/model/local_user.dart';
+import 'package:fyp/model/promise_provider.dart';
 import 'package:fyp/screens/contract_detail_tab/contract_detail_tab.dart';
 import 'package:fyp/screens/general_template/general_template_dart.dart';
+import 'package:fyp/screens/job_agreement/job_agreement_screen.dart';
 import 'package:fyp/screens/login_page/login_screen.dart';
-import 'package:fyp/screens/promise_agreement/component/additional_screen.dart';
-import 'package:fyp/screens/promise_agreement/component/penalties_screen.dart';
-import 'package:fyp/screens/promise_agreement/component/time_line.dart';
-import 'package:fyp/screens/promise_agreement/promise_agreement.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
+import 'package:fyp/screens/rent_agreement/rent_agreement_screen.dart';
 import 'package:fyp/screens/review_template_screen/review_template_dart.dart';
 import 'package:fyp/screens/warning_screen/warning_screen.dart';
 import 'package:fyp/util/constant.dart';
@@ -157,7 +155,7 @@ class GeneralHomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentDate = contractModelData.contractDetail?.executionDate ?? '';
+    final currentDate = contractModelData.contractStartDate;
     return GestureDetector(
       onTap: () => onPressed(context),
       child: Card(
@@ -175,7 +173,7 @@ class GeneralHomeCard extends StatelessWidget {
                     GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 5),
-              currentDate.isEmpty
+              currentDate == null || currentDate.isEmpty
                   ? ''.toText()
                   : currentDate.formattedDate.toText(),
               const SizedBox(width: 20),
@@ -254,33 +252,15 @@ class TabDraftView extends StatelessWidget {
 
   void _draftPressed(BuildContext context, ContractModel e) async {
     await storage.setContract(e);
-    if (e.savedPlace == PromiseAgreement.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-    } else if (e.savedPlace == TimeLineScreen.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-      Navigator.pushNamed(context, TimeLineScreen.routeName);
-    } else if (e.savedPlace == AdditionalScreen.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-      Navigator.pushNamed(context, TimeLineScreen.routeName);
-      Navigator.pushNamed(context, AdditionalScreen.routeName);
-    } else if (e.savedPlace == PenaltiesScreen.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-      Navigator.pushNamed(context, TimeLineScreen.routeName);
-      Navigator.pushNamed(context, AdditionalScreen.routeName);
-      Navigator.pushNamed(context, PenaltiesScreen.routeName);
-    } else if (e.savedPlace == GeneralTemplate.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-      Navigator.pushNamed(context, TimeLineScreen.routeName);
-      Navigator.pushNamed(context, AdditionalScreen.routeName);
-      Navigator.pushNamed(context, PenaltiesScreen.routeName);
+    if (e.savedPlace == GeneralTemplate.routeName) {
       Navigator.pushNamed(context, GeneralTemplate.routeName);
     } else if (e.savedPlace == WarningScreen.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-      Navigator.pushNamed(context, TimeLineScreen.routeName);
-      Navigator.pushNamed(context, AdditionalScreen.routeName);
-      Navigator.pushNamed(context, PenaltiesScreen.routeName);
       Navigator.pushNamed(context, GeneralTemplate.routeName);
       Navigator.pushNamed(context, WarningScreen.routeName);
+    } else if (e.savedPlace == JobAgreementScreen.routeName) {
+      Navigator.pushNamed(context, JobAgreementScreen.routeName);
+    } else if (e.savedPlace == RentAgreementScreen.routeName) {
+      Navigator.pushNamed(context, RentAgreementScreen.routeName);
     }
   }
 }
@@ -349,6 +329,10 @@ class _ReviewViewState extends State<ReviewView> {
                             .doc(e.contractID)
                             .get();
 
+                        final imageReview = await userRepository
+                            .get(reviewModel.reviewRequestId);
+                        final imageReceiver = await userRepository
+                            .get(reviewModel.receiverRequestId);
                         final myReviewModel = myId.data() ?? {};
                         if (myData == {}) return;
                         final contractData =
@@ -363,6 +347,8 @@ class _ReviewViewState extends State<ReviewView> {
                                       warning: contractData
                                               .contractDetail?.warning ??
                                           '',
+                                      isShowReviewButton:
+                                          contractData.isReviewState,
                                       receiverRequestId:
                                           reviewModel.receiverRequestId,
                                       startDate:
@@ -393,6 +379,11 @@ class _ReviewViewState extends State<ReviewView> {
                                           contractData.userProvinceTo ?? '',
                                       contractName: e.contractName,
                                       contractID: e.contractID,
+                                      requestImage:
+                                          imageReview?.signatureImage ?? '',
+                                      reviewImage:
+                                          imageReceiver?.signatureImage ?? '',
+                                      contractModel: contractData,
                                     )));
                       },
                       child:
@@ -478,6 +469,7 @@ class _ReviewViewState extends State<ReviewView> {
                                                         .doc(e.contractID)
                                                         .update({
                                                       'status': 'All',
+                                                      'isReviewState': false,
                                                     });
                                                     final model = WitnessShowModel(
                                                         contractName:
@@ -630,16 +622,14 @@ class CustomCardStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Expanded(child: child),
-        const SizedBox(width: 20),
         Expanded(
-          flex: 2,
           child: Container(
+            alignment: Alignment.center,
             padding: const EdgeInsets.all(8),
             child: Text(
               title,
+              textAlign: TextAlign.center,
               style: const TextStyle(
                   overflow: TextOverflow.ellipsis,
                   fontSize: 14,
@@ -737,38 +727,6 @@ class DeletedTab extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  void _deletePressed(BuildContext context, ContractModel e) async {
-    await storage.setContract(e);
-    if (e.savedPlace == PromiseAgreement.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-    } else if (e.savedPlace == TimeLineScreen.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-      Navigator.pushNamed(context, TimeLineScreen.routeName);
-    } else if (e.savedPlace == AdditionalScreen.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-      Navigator.pushNamed(context, TimeLineScreen.routeName);
-      Navigator.pushNamed(context, AdditionalScreen.routeName);
-    } else if (e.savedPlace == PenaltiesScreen.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-      Navigator.pushNamed(context, TimeLineScreen.routeName);
-      Navigator.pushNamed(context, AdditionalScreen.routeName);
-      Navigator.pushNamed(context, PenaltiesScreen.routeName);
-    } else if (e.savedPlace == GeneralTemplate.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-      Navigator.pushNamed(context, TimeLineScreen.routeName);
-      Navigator.pushNamed(context, AdditionalScreen.routeName);
-      Navigator.pushNamed(context, PenaltiesScreen.routeName);
-      Navigator.pushNamed(context, GeneralTemplate.routeName);
-    } else if (e.savedPlace == WarningScreen.routeName) {
-      Navigator.pushNamed(context, PromiseAgreement.routeName);
-      Navigator.pushNamed(context, TimeLineScreen.routeName);
-      Navigator.pushNamed(context, AdditionalScreen.routeName);
-      Navigator.pushNamed(context, PenaltiesScreen.routeName);
-      Navigator.pushNamed(context, GeneralTemplate.routeName);
-      Navigator.pushNamed(context, WarningScreen.routeName);
-    }
   }
 }
 
@@ -940,10 +898,14 @@ class ShowWitness extends StatelessWidget {
         if (myReview.isEmpty) return;
 
         final review = ReviewModel.fromJson(myReview);
+        final imageReview = await userRepository.get(review.reviewRequestId);
+        final imageReceiver =
+            await userRepository.get(review.receiverRequestId);
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ReviewTemplateScreen(
+                      isShowReviewButton: contractData.isReviewState,
                       reviewRequestID: review.reviewRequestId,
                       witnessShow: witnessStatus,
                       selectedStatus: status,
@@ -975,6 +937,9 @@ class ShowWitness extends StatelessWidget {
                           contractData.contractDetail?.witness1?.witnessId,
                       witness2Id:
                           contractData.contractDetail?.witness2?.witnessId,
+                      requestImage: imageReview?.signatureImage ?? '',
+                      reviewImage: imageReceiver?.signatureImage ?? '',
+                      contractModel: contractData,
                     )));
       },
       child: Card(

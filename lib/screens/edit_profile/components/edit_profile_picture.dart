@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfilePicture extends StatefulWidget {
   final String? imagePath;
@@ -41,8 +41,7 @@ class _EditProfilePictureState extends State<EditProfilePicture> {
               decoration: const BoxDecoration(
                   shape: BoxShape.circle, color: Colors.black),
               child: Center(
-                child:
-                    Icon(Icons.edit_outlined, color: Colors.white, size: 18),
+                child: Icon(Icons.edit_outlined, color: Colors.white, size: 18),
               ),
             ),
           ),

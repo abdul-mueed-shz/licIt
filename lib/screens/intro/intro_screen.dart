@@ -1,7 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:fyp/screens/login_page/login_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:flutter/material.dart';
 
 class IntroScreen extends StatefulWidget {
   static const String routeName = "/IntroScreen";
@@ -14,7 +14,6 @@ class IntroScreen extends StatefulWidget {
 
 class _IntroScreenState extends State<IntroScreen> {
   void _onIntroEnd(context) {
-
     Navigator.pushReplacementNamed(context, LoginScreen.routeName);
   }
 

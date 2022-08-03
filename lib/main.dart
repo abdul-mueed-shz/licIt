@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/locator.dart';
-import 'package:fyp/screens/handyman/handyman_provider.dart';
-import 'package:fyp/screens/promise_agreement/promise_provider.dart';
-import 'package:fyp/screens/rental/rental_provider.dart';
+import 'package:fyp/model/promise_provider.dart';
+import 'package:fyp/screens/job_agreement/job_provider.dart';
+import 'package:fyp/screens/rent_agreement/rental_provider.dart';
 import 'package:fyp/screens/splash/splash_screen.dart';
 import 'package:fyp/services/local_notification.dart';
 import 'package:fyp/widget/routes.dart';
@@ -17,7 +17,6 @@ void main() async {
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   LocalNotificationService.initialize();
-
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -87,7 +86,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (_) => PromiseProvider()),
         ChangeNotifierProvider(create: (_) => RentalProvider()),
-        ChangeNotifierProvider(create: (_) => HandyManProvider())
+        ChangeNotifierProvider(create: (_) => JobProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -99,7 +98,6 @@ class _MyAppState extends State<MyApp> {
             child: FlutterEasyLoading(child: widget),
           );
         },
-
       ),
     );
   }

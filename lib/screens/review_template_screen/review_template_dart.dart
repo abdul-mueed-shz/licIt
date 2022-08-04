@@ -727,7 +727,8 @@ class MyPreviewScreen extends StatelessWidget {
                       Column(children: [
                         Image.network(requestImage,
                             fit: BoxFit.contain, width: 100, height: 100),
-                        Text(userNameTo),
+                        Text(reviewModel?.requestName ?? userNameTo),
+
                       ]),
                   ],
                 ),

@@ -384,6 +384,7 @@ class _ReviewViewState extends State<ReviewView> {
                                       reviewImage:
                                           imageReceiver?.signatureImage ?? '',
                                       contractModel: contractData,
+                                      reviewModel: reviewModel,
                                     )));
                       },
                       child:

@@ -48,9 +48,11 @@ class ReviewTemplateScreen extends StatefulWidget {
   final String userProvinceTo;
   final String reviewRequestID;
   final String selectedStatus;
+  final ReviewModel? reviewModel;
 
   const ReviewTemplateScreen({
     Key? key,
+    this.reviewModel,
     required this.startDate,
     this.isShowReviewButton = false,
     this.witnessShow = false,
@@ -188,6 +190,7 @@ class _ReviewTemplateScreenState extends State<ReviewTemplateScreen> {
                   children: [
                     if (widget.contractModel.contractStatus == 'Promise')
                       MyPreviewScreen(
+                          reviewModel: widget.reviewModel,
                           contractModel: widget.contractModel,
                           requestImage: widget.requestImage,
                           reviewImage: widget.reviewImage,
@@ -602,10 +605,12 @@ class MyPreviewScreen extends StatelessWidget {
   final String userNameFrom;
   final String requestImage;
   final String userNameTo;
+  final ReviewModel? reviewModel;
   const MyPreviewScreen(
       {Key? key,
       required this.contractModel,
       required this.reviewImage,
+      this.reviewModel,
       required this.userNameFrom,
       required this.requestImage,
       required this.userNameTo})
@@ -712,16 +717,18 @@ class MyPreviewScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Column(children: [
-                      Image.network(reviewImage,
-                          fit: BoxFit.contain, width: 100, height: 100),
-                      Text(userNameFrom),
-                    ]),
-                    Column(children: [
-                      Image.network(requestImage,
-                          fit: BoxFit.contain, width: 100, height: 100),
-                      Text(userNameTo),
-                    ]),
+                    if (reviewModel?.user2Signed == true)
+                      Column(children: [
+                        Image.network(reviewImage,
+                            fit: BoxFit.contain, width: 100, height: 100),
+                        Text(reviewModel?.reviewName ?? userNameFrom),
+                      ]),
+                    if (reviewModel?.user1Signed == true)
+                      Column(children: [
+                        Image.network(requestImage,
+                            fit: BoxFit.contain, width: 100, height: 100),
+                        Text(userNameTo),
+                      ]),
                   ],
                 ),
               ]),

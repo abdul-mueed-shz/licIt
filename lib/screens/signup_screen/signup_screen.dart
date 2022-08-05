@@ -277,6 +277,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 child: _identityCardWidget(),
               ),
             ),
+            const SizedBox(height: 20),
             frontPic == null
                 ? MyElevatedButton('Face Picture', onTap: (_) async {
                     final file = await frontFaceCamera(context);
@@ -292,6 +293,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           image: FileImage(frontPic!)),
                     ),
                   ),
+            const SizedBox(height: 20),
 
             Container(
               margin: const EdgeInsets.only(top: 10),

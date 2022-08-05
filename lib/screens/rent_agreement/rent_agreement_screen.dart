@@ -153,7 +153,7 @@ class _FormatFillInTheBlanksState extends State<FormatFillInTheBlanks> {
             fontWeight: FontWeight.bold),
         children: <InlineSpan>[
           const TextSpan(
-            text: 'This agreement is made and executed at',
+            text: 'This agreement is made and executed at ',
             style: const TextStyle(
               height: 1.0,
               color: Colors.grey,

@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           backgroundColor: Colors.green,
           title: Text(
-            'Rental App',
+            'LicIt',
             style: GoogleFonts.lato(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,

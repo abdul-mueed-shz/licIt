@@ -104,7 +104,7 @@ class ContractModel {
     this.rentalAgreementUserHouseAnyFitting,
     this.jobAddress,
     this.jobName,
-    this.contractStatus = 'Promise',
+    this.contractStatus = 'NDA',
     this.jobCity,
     this.jobProvince,
     this.jobPostalCode,

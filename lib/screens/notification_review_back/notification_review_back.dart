@@ -52,7 +52,7 @@ class _NotificationScreenBackState extends State<NotificationScreenBack> {
                   await userRepository.get(model?.receiverRequestId ?? '');
               await context.read<PromiseProvider>().send(
                   reviewUser?.token ?? '',
-                  '${model?.reviewName ?? ''} create the contract for you',
+                  '${model?.reviewName ?? ''} created a contract for you.',
                   'Licit Agreement');
               rotateDialog(context, reviewUser);
               await EasyLoading.dismiss();

@@ -76,17 +76,16 @@ class _IntroScreenState extends State<IntroScreen> {
           text: TextSpan(
               text: title,
               style: GoogleFonts.spartan(
-                fontWeight: FontWeight.w800,
-                fontSize: 30,
-                color: Colors.blue,
-              ),
+                  fontWeight: FontWeight.w800,
+                  fontSize: 30,
+                  color: Colors.green),
               children: [
                 TextSpan(
                   text: '\n$subtitle',
                   style: GoogleFonts.spartan(
                     fontWeight: FontWeight.w800,
                     fontSize: 30,
-                    color: Colors.blue,
+                    color: Colors.green,
                   ),
                 )
               ])),

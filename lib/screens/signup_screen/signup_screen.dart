@@ -347,7 +347,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         frontPic != null) {
       EasyLoading.show();
       Fluttertoast.showToast(
-          msg: "Please Wait We create the user ", // message
+          msg: "Please Wait", // message
           toastLength: Toast.LENGTH_LONG, // length
           gravity: ToastGravity.BOTTOM, // location
           timeInSecForIosWeb: 1 // duration

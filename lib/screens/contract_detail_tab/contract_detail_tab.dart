@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/model/contract_model.dart';
 import 'package:fyp/model/local_user.dart';
+import 'package:fyp/screens/rent_agreement/pdf_review.dart';
+import 'package:fyp/screens/review_template_screen/pdf.dart';
 import 'package:fyp/screens/review_template_screen/review_template_dart.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -43,6 +45,63 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          actions: [
+            IconButton(
+              onPressed: () async {
+                if (widget.contractModel.contractStatus == 'Promise') {
+                  final pdfFile = await MyPdfPromise.generateCenteredText(
+                    widget.contractModel,
+                    widget.reviewModel,
+                  );
+                  PdfApi.openFile(pdfFile);
+                } else if (widget.contractModel.contractStatus == 'Rental') {
+                  final pdfview = await PdfReview.generateCenteredText(
+                      widget.contractModel.rentalAgreementLocation,
+                      widget.contractModel.rentalAgreementDate,
+                      widget.contractModel.rentalAgreementUserNameFrom,
+                      widget.contractModel.rentalAgreementGender,
+                      widget.contractModel.rentalAgreementAge,
+                      widget.contractModel.rentalAgreementResiding,
+                      widget.contractModel.rentalAgreementUserAddressFrom,
+                      widget.contractModel.rentalAgreementUserCityFrom,
+                      widget.contractModel.rentalAgreementUserAreaCodeFrom,
+                      widget.contractModel.rentalAgreementUserCountryFrom,
+                      widget.contractModel.rentalAgreementUserCnicFrom,
+                      widget.contractModel.rentalAgreementUserNameTO,
+                      widget.contractModel.rentalAgreementUserGender,
+                      widget.contractModel.rentalAgreementUserAgeTo,
+                      widget.contractModel.rentalAgreementUserResidingTo,
+                      widget.contractModel.rentalAgreementUserAddressTo,
+                      widget.contractModel.rentalAgreementUserCityTo,
+                      widget.contractModel.rentalAgreementUserAreaCodeTo,
+                      widget.contractModel.rentalAgreementUserCountryTo,
+                      widget.contractModel.rentalAgreementUserCnicTo,
+                      widget.contractModel.rentalAgreementUserHouse,
+                      widget.contractModel.rentalAgreementUserHouseBlock,
+                      widget.contractModel.rentalAgreementUserHouseAddress,
+                      widget.contractModel.rentalAgreementUserHouseCity,
+                      widget.contractModel.rentalAgreementUserHouseAreaCode,
+                      widget.contractModel.rentalAgreementUserHouseCountry,
+                      widget.contractModel.rentalAgreementUserHouseBedroom,
+                      widget.contractModel.rentalAgreementUserHouseBathroom,
+                      widget.contractModel.rentalAgreementUserHouseBalconey,
+                      widget.contractModel.rentalAgreementUserHouseCarPorch,
+                      widget.contractModel.rentalAgreementUserHousekitchen,
+                      widget.contractModel.rentalAgreementUserHouseAnyFitting);
+                  PdfReview.openFile(pdfview);
+                }
+              },
+              icon: const Icon(
+                Icons.preview,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(

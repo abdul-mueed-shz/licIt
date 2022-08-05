@@ -68,7 +68,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           SizedBox(height: sized.height / 20),
           Container(
               width: sized.width,
-              height: sized.height * .5,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
                 color: Colors.white,
@@ -79,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 EditTextField(controller: cnicController),
                 EditTextField(controller: emailController),
                 EditTextField(controller: phoneController),
-                SizedBox(height: sized.height / 15),
+                SizedBox(height: 5),
                 MyElevatedButton('Update', onTap: onTap)
               ])),
         ]),

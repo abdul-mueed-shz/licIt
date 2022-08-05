@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           backgroundColor: Colors.green,
           title: Text(
-            'LicIt',
+            'Rental App',
             style: GoogleFonts.lato(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -311,6 +311,8 @@ class _ReviewViewState extends State<ReviewView> {
                   (e) {
                     return GestureDetector(
                       onTap: () async {
+                        LocalUser? imageWitness1;
+                        LocalUser? imageWitness2;
                         final reviewsCollectionData = await FirebaseFirestore
                             .instance
                             .collection('reviews')
@@ -338,6 +340,26 @@ class _ReviewViewState extends State<ReviewView> {
                         if (myData == {}) return;
                         final contractData =
                             ContractModel.fromJson(myReviewModel);
+                        if (contractData.contractDetail?.witness1?.witnessId !=
+                                null &&
+                            contractData
+                                    .contractDetail?.witness1?.witnessSigned ==
+                                true) {
+                          final user1 = await userRepository.get(contractData
+                                  .contractDetail?.witness1?.witnessId ??
+                              '');
+                          imageWitness1 = user1;
+                        }
+                        if (contractData.contractDetail?.witness2?.witnessId !=
+                                null &&
+                            contractData
+                                    .contractDetail?.witness2?.witnessSigned ==
+                                true) {
+                          final user2 = await userRepository.get(contractData
+                                  .contractDetail?.witness2?.witnessId ??
+                              '');
+                          imageWitness2 = user2;
+                        }
 
                         Navigator.push(
                             context,
@@ -385,7 +407,13 @@ class _ReviewViewState extends State<ReviewView> {
                                       reviewImage:
                                           imageReceiver?.signatureImage ?? '',
                                       contractModel: contractData,
+                                      imageWitness2:
+                                          imageWitness2?.signatureImage,
+                                      imageWitness1:
+                                          imageWitness1?.signatureImage,
                                       reviewModel: reviewModel,
+                                      witness2Name: imageWitness2?.name ?? '',
+                                      witness1Name: imageWitness1?.name ?? '',
                                     )));
                       },
                       child:
@@ -882,6 +910,9 @@ class ShowWitness extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
+        LocalUser? imageWitness1;
+        LocalUser? imageWitness2;
+
         final contract = await FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
@@ -903,10 +934,24 @@ class ShowWitness extends StatelessWidget {
         final imageReview = await userRepository.get(review.reviewRequestId);
         final imageReceiver =
             await userRepository.get(review.receiverRequestId);
+        if (contractData.contractDetail?.witness1?.witnessId != null &&
+            contractData.contractDetail?.witness1?.witnessSigned == true) {
+          final user1 = await userRepository
+              .get(contractData.contractDetail?.witness1?.witnessId ?? '');
+          imageWitness1 = user1;
+        }
+        if (contractData.contractDetail?.witness2?.witnessId != null &&
+            contractData.contractDetail?.witness2?.witnessSigned == true) {
+          final user2 = await userRepository
+              .get(contractData.contractDetail?.witness2?.witnessId ?? '');
+          imageWitness2 = user2;
+        }
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ReviewTemplateScreen(
+                      imageWitness1: imageWitness1?.signatureImage,
+                      imageWitness2: imageWitness2?.signatureImage,
                       isShowReviewButton: contractData.isReviewState,
                       reviewRequestID: review.reviewRequestId,
                       witnessShow: witnessStatus,
@@ -942,6 +987,8 @@ class ShowWitness extends StatelessWidget {
                       requestImage: imageReview?.signatureImage ?? '',
                       reviewImage: imageReceiver?.signatureImage ?? '',
                       contractModel: contractData,
+                      witness1Name: imageWitness1?.name ?? '',
+                      witness2Name: imageWitness2?.name ?? '',
                     )));
       },
       child: Card(
@@ -1010,6 +1057,8 @@ class ContractDetailTabScreen extends StatelessWidget {
                 children: localuser.contractDetailTab
                     .map((contractInfo) => GestureDetector(
                           onTap: () async {
+                            LocalUser? imageWitness1;
+                            LocalUser? imageWitness2;
                             final contract = await FirebaseFirestore.instance
                                 .collection('users')
                                 .doc(contractInfo.contractUserId)
@@ -1019,54 +1068,64 @@ class ContractDetailTabScreen extends StatelessWidget {
                             final contractDetail = contract.data() ?? {};
                             final contractModel =
                                 ContractModel.fromJson(contractDetail);
+                            final reviewsCollectionData =
+                                await FirebaseFirestore.instance
+                                    .collection('reviews')
+                                    .doc(contractInfo.contractID)
+                                    .get();
+                            final myData = reviewsCollectionData.data() ?? {};
+                            if (myData == {}) return;
+                            final reviewModel = ReviewModel.fromJson(myData);
+                            final imageReview = await userRepository
+                                .get(reviewModel.reviewRequestId);
+                            final imageReceiver = await userRepository
+                                .get(reviewModel.receiverRequestId);
+                            if (contractModel
+                                        .contractDetail?.witness1?.witnessId !=
+                                    null &&
+                                contractModel.contractDetail?.witness1
+                                        ?.witnessSigned ==
+                                    true) {
+                              final user1 = await userRepository.get(
+                                  contractModel.contractDetail?.witness1
+                                          ?.witnessId ??
+                                      '');
+                              imageWitness1 = user1;
+                            }
+                            if (contractModel
+                                        .contractDetail?.witness2?.witnessId !=
+                                    null &&
+                                contractModel.contractDetail?.witness2
+                                        ?.witnessSigned ==
+                                    true) {
+                              final user2 = await userRepository.get(
+                                  contractModel.contractDetail?.witness2
+                                          ?.witnessId ??
+                                      '');
+                              imageWitness2 = user2;
+                            }
+
                             await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (_) => ContractDetailScreen(
+                                          imageWitness2:
+                                              imageWitness2?.signatureImage,
+                                          imageWitness1:
+                                              imageWitness1?.signatureImage,
+                                          requestImage:
+                                              imageReview?.signatureImage ?? '',
+                                          reviewImage:
+                                              imageReceiver?.signatureImage ??
+                                                  '',
+                                          contractModel: contractModel,
+                                          reviewModel: reviewModel,
                                           witness1: contractModel.contractDetail
                                                   ?.witness1?.witnessId ??
                                               '',
                                           witness2: contractModel.contractDetail
                                                   ?.witness2?.witnessId ??
                                               '',
-                                          userCityTo:
-                                              contractModel.userCityTo ?? '',
-                                          warning: contractModel
-                                                  .contractDetail?.warning ??
-                                              '',
-                                          userCityFrom:
-                                              contractModel.userCityFrom ?? '',
-                                          userAddressFrom:
-                                              contractModel.userAddressFrom ??
-                                                  '',
-                                          userProvinceTo:
-                                              contractModel.userProvinceTo ??
-                                                  '',
-                                          userCountryTo:
-                                              contractModel.userCountryTo ?? '',
-                                          userNameFrom:
-                                              contractModel.userNameFrom ?? '',
-                                          userNameTo:
-                                              contractModel.userNameTo ?? '',
-                                          userAddressTo: '',
-                                          userCountryFrom:
-                                              contractModel.userCountryFrom ??
-                                                  '',
-                                          userProvinceFrom:
-                                              contractModel.userProvinceFrom ??
-                                                  '',
-                                          endDate:
-                                              contractModel.contractEndDate ??
-                                                  '',
-                                          userLocalityTo:
-                                              contractModel.userLocalityTo ??
-                                                  '',
-                                          userLocalityFrom:
-                                              contractModel.userLocalityFrom ??
-                                                  '',
-                                          startDate:
-                                              contractModel.contractStartDate ??
-                                                  '',
                                           witness2status: contractModel
                                                   .contractDetail
                                                   ?.witness1
@@ -1077,6 +1136,10 @@ class ContractDetailTabScreen extends StatelessWidget {
                                                   ?.witness2
                                                   ?.witnessSigned ??
                                               false,
+                                          witness1Name:
+                                              imageWitness1?.name ?? '',
+                                          witness2Name:
+                                              imageWitness2?.name ?? '',
                                         )));
                           },
                           child: Card(

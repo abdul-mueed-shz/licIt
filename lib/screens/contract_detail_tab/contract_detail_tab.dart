@@ -1,50 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:fyp/util/my_extensions.dart';
+import 'package:fyp/model/contract_model.dart';
+import 'package:fyp/model/local_user.dart';
+import 'package:fyp/screens/rent_agreement/pdf_review.dart';
+import 'package:fyp/screens/review_template_screen/pdf.dart';
+import 'package:fyp/screens/review_template_screen/review_template_dart.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ContractDetailScreen extends StatefulWidget {
-  final String startDate;
-  final String endDate;
-
-  final String userNameFrom;
-  final String userNameTo;
-  final String userAddressFrom;
-  final String userAddressTo;
-  final String userCityFrom;
-  final String userCityTo;
-  final String userCountryFrom;
-  final String userCountryTo;
-  final String userLocalityFrom;
-  final String userLocalityTo;
-  final String userProvinceFrom;
-  final String warning;
-  final String userProvinceTo;
+  final String reviewImage;
+  final String requestImage;
+  final ReviewModel? reviewModel;
+  final ContractModel contractModel;
   final String witness1;
   final String witness2;
   final bool witness1status;
   final bool witness2status;
+  final String? imageWitness1;
+  final String? imageWitness2;
+  final String witness1Name;
+  final String witness2Name;
 
   const ContractDetailScreen({
     Key? key,
-    required this.startDate,
-    required this.endDate,
-    required this.warning,
     required this.witness1,
     required this.witness2,
-    required this.userNameFrom,
-    required this.userNameTo,
-    required this.userAddressFrom,
-    required this.userAddressTo,
-    required this.userCityFrom,
-    required this.userCityTo,
-    required this.userCountryFrom,
-    required this.userCountryTo,
-    required this.userLocalityFrom,
-    required this.userLocalityTo,
-    required this.userProvinceFrom,
-    required this.userProvinceTo,
     required this.witness1status,
     required this.witness2status,
+    required this.reviewImage,
+    required this.requestImage,
+    this.reviewModel,
+    required this.contractModel,
+    this.imageWitness1,
+    this.imageWitness2,
+    required this.witness1Name,
+    required this.witness2Name,
   }) : super(key: key);
 
   @override
@@ -56,6 +45,63 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          actions: [
+            IconButton(
+              onPressed: () async {
+                if (widget.contractModel.contractStatus == 'Promise') {
+                  final pdfFile = await MyPdfPromise.generateCenteredText(
+                    widget.contractModel,
+                    widget.reviewModel,
+                  );
+                  PdfApi.openFile(pdfFile);
+                } else if (widget.contractModel.contractStatus == 'Rental') {
+                  final pdfview = await PdfReview.generateCenteredText(
+                      widget.contractModel.rentalAgreementLocation,
+                      widget.contractModel.rentalAgreementDate,
+                      widget.contractModel.rentalAgreementUserNameFrom,
+                      widget.contractModel.rentalAgreementGender,
+                      widget.contractModel.rentalAgreementAge,
+                      widget.contractModel.rentalAgreementResiding,
+                      widget.contractModel.rentalAgreementUserAddressFrom,
+                      widget.contractModel.rentalAgreementUserCityFrom,
+                      widget.contractModel.rentalAgreementUserAreaCodeFrom,
+                      widget.contractModel.rentalAgreementUserCountryFrom,
+                      widget.contractModel.rentalAgreementUserCnicFrom,
+                      widget.contractModel.rentalAgreementUserNameTO,
+                      widget.contractModel.rentalAgreementUserGender,
+                      widget.contractModel.rentalAgreementUserAgeTo,
+                      widget.contractModel.rentalAgreementUserResidingTo,
+                      widget.contractModel.rentalAgreementUserAddressTo,
+                      widget.contractModel.rentalAgreementUserCityTo,
+                      widget.contractModel.rentalAgreementUserAreaCodeTo,
+                      widget.contractModel.rentalAgreementUserCountryTo,
+                      widget.contractModel.rentalAgreementUserCnicTo,
+                      widget.contractModel.rentalAgreementUserHouse,
+                      widget.contractModel.rentalAgreementUserHouseBlock,
+                      widget.contractModel.rentalAgreementUserHouseAddress,
+                      widget.contractModel.rentalAgreementUserHouseCity,
+                      widget.contractModel.rentalAgreementUserHouseAreaCode,
+                      widget.contractModel.rentalAgreementUserHouseCountry,
+                      widget.contractModel.rentalAgreementUserHouseBedroom,
+                      widget.contractModel.rentalAgreementUserHouseBathroom,
+                      widget.contractModel.rentalAgreementUserHouseBalconey,
+                      widget.contractModel.rentalAgreementUserHouseCarPorch,
+                      widget.contractModel.rentalAgreementUserHousekitchen,
+                      widget.contractModel.rentalAgreementUserHouseAnyFitting);
+                  PdfReview.openFile(pdfview);
+                }
+              },
+              icon: const Icon(
+                Icons.preview,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -64,122 +110,54 @@ class _ContractDetailScreenState extends State<ContractDetailScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(
-                  "Licit Agreement",
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.lato(
-                      fontSize: 40,
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold),
-                ),
-                widget.warning.isNotEmpty
-                    ? Text(
-                        widget.warning,
-                        style: GoogleFonts.lato(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      )
-                    : const SizedBox(),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.8),
-                      border: Border.all(color: Colors.black),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(20))),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 5),
-                      const MyTextWidget(
-                        title: 'This Agreement is Entered into on',
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                        title: 'Start Date',
-                        content: widget.startDate.formattedDate,
-                      ),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'Between M/s', content: widget.userNameFrom),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'addressed at',
-                          content: widget.userAddressFrom),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'Locality ', content: widget.userLocalityFrom),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'City ', content: widget.userCityFrom),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'Province ', content: widget.userProvinceFrom),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'Country ', content: widget.userCountryFrom),
-                      const SizedBox(height: 5),
-                      const MyTextWidget(
-                          title:
-                              'here in after referred to as the Disclosing party'),
-                      Text(
-                        '',
-                        textAlign: TextAlign.left,
-                        style: GoogleFonts.lato(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      ContractRichTextSpan(
-                        title: 'End Date',
-                        content: widget.endDate.formattedDate,
-                      ),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'Between M/s', content: widget.userNameTo),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'addressed at', content: widget.userAddressTo),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'Locality ', content: widget.userLocalityTo),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'City ', content: widget.userCityTo),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'Province ', content: widget.userProvinceTo),
-                      const SizedBox(height: 5),
-                      ContractRichTextSpan(
-                          title: 'Country ', content: widget.userCountryTo),
-                      const SizedBox(height: 5),
-                      const MyTextWidget(
-                          title:
-                              'Receiving party collectively  here in after referred to as the'),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Column(
-                            children: [
-                              Text(widget.witness1.isNotEmpty &&
-                                      widget.witness1status == true
-                                  ? widget.witness1
-                                  : ''),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(widget.witness2.isNotEmpty &&
-                                      widget.witness2status == true
-                                  ? widget.witness2
-                                  : ''),
-                            ],
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
+                if (widget.contractModel.contractStatus == 'Promise')
+                  MyPreviewScreen(
+                      witness1Name: widget.witness1Name,
+                      witness2Name: widget.witness2Name,
+                      contractModel: widget.contractModel,
+                      reviewImage: widget.reviewImage,
+                      userNameFrom: widget.reviewModel?.reviewName ?? '',
+                      requestImage: widget.requestImage,
+                      userNameTo: widget.reviewModel?.requestName ?? '',
+                      witness2: widget.witness2,
+                      reviewModel: widget.reviewModel,
+                      witness1status: widget.witness2status,
+                      witness1: widget.witness1,
+                      imageWitness1: widget.imageWitness1,
+                      imageWitness2: widget.imageWitness2,
+                      witness2status: widget.witness1status),
+                if (widget.contractModel.contractStatus == 'Rental')
+                  MyRentalView(
+                      contractModel: widget.contractModel,
+                      witness1Name: widget.witness1Name,
+                      witness2Name: widget.witness2Name,
+                      reviewImage: widget.reviewImage,
+                      userNameFrom: widget.reviewModel?.reviewName ?? '',
+                      requestImage: widget.requestImage,
+                      userNameTo: widget.reviewModel?.requestName ?? '',
+                      witness2: widget.witness2,
+                      reviewModel: widget.reviewModel,
+                      witness1status: widget.witness2status,
+                      imageWitness1: widget.imageWitness1,
+                      imageWitness2: widget.imageWitness2,
+                      witness1: widget.witness1,
+                      witness2status: widget.witness1status),
+                if (widget.contractModel.contractStatus == 'Handy')
+                  MyHandyPreview(
+                      contractModel: widget.contractModel,
+                      reviewImage: widget.reviewImage,
+                      witness1Name: widget.witness1Name,
+                      witness2Name: widget.witness2Name,
+                      userNameFrom: widget.reviewModel?.reviewName ?? '',
+                      requestImage: widget.requestImage,
+                      userNameTo: widget.reviewModel?.requestName ?? '',
+                      witness2: widget.witness2,
+                      imageWitness1: widget.imageWitness1,
+                      imageWitness2: widget.imageWitness2,
+                      reviewModel: widget.reviewModel,
+                      witness1status: widget.witness2status,
+                      witness1: widget.witness1,
+                      witness2status: widget.witness1status)
               ],
             ),
           ),

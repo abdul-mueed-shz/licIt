@@ -24,7 +24,11 @@ class JobProvider with ChangeNotifier {
   final jobProvince = TextEditingController();
   final jobPostalCode = TextEditingController();
   final jobCountry = TextEditingController();
-  final jobAgreementTitle = TextEditingController();
+  final companyName = TextEditingController();
+  final companyDetails = TextEditingController();
+  final employmentStartingDate = TextEditingController();
+  final jobRole = TextEditingController();
+  final officeLocation = TextEditingController();
 
   final uuid = const Uuid();
 
@@ -54,7 +58,7 @@ class JobProvider with ChangeNotifier {
         jobCountry: jobCountry.text.trim(),
         jobCity: jobCity.text.trim(),
         jobProvince: jobProvince.text.trim(),
-        jobAgreementTitle: jobAgreementTitle.text.trim(),
+        jobAgreementTitle: companyName.text.trim(),
         jobUserName: jobUserName.text.trim(),
         jobPostalCode: jobPostalCode.text.trim(),
         jobName: jobName.text.trim(),
@@ -73,7 +77,7 @@ class JobProvider with ChangeNotifier {
       'jobCountry': jobCountry.text.trim(),
       'jobCity': jobCity.text.trim(),
       'jobProvince': jobProvince.text.trim(),
-      'jobAgreementTitle': jobAgreementTitle.text.trim(),
+      'jobAgreementTitle': companyName.text.trim(),
       'jobUserName': jobUserName.text.trim(),
       'jobPostalCode': jobPostalCode.text.trim(),
       'jobName': jobName.text.trim(),
@@ -95,7 +99,7 @@ class JobProvider with ChangeNotifier {
     jobProvince.clear();
     jobPostalCode.clear();
     jobCountry.clear();
-    jobAgreementTitle.clear();
+    companyName.clear();
     notifyListeners();
   }
 
@@ -136,7 +140,7 @@ class JobProvider with ChangeNotifier {
     jobProvince.text = pref?.jobProvince ?? '';
     jobPostalCode.text = pref?.jobPostalCode ?? '';
     jobCountry.text = pref?.jobCountry ?? '';
-    jobAgreementTitle.text = pref?.jobAgreementTitle ?? '';
+    companyName.text = pref?.jobAgreementTitle ?? '';
   }
 
   Future<bool> deleteStatus(BuildContext context) async {

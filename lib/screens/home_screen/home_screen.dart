@@ -175,7 +175,8 @@ class GeneralHomeCard extends StatelessWidget {
               const SizedBox(height: 5),
               currentDate == null || currentDate.isEmpty
                   ? ''.toText()
-                  : currentDate.formattedDate.toText(),
+                  : '${currentDate.formattedDate} ${currentDate.formattedTime}'
+                      .toText(),
               const SizedBox(width: 20),
               Row(
                 children: [

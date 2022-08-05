@@ -147,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 25.0,
         ),
         //FOR LOGIN
-        BottomButtons(title: 'LogIn', onTap: _onLogin),
+        BottomButtons(title: 'Log In', onTap: _onLogin),
         const SizedBox(
           height: 25.0,
         ),

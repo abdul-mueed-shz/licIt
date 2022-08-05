@@ -168,7 +168,7 @@ class _SearchScreenState extends State<SearchScreen> {
             storage.contract!.id, {'contractDetail.showSendOption': true});
         await context.read<PromiseProvider>().send(
             data!.token!,
-            '${user1Data?.name ?? ''} create the contract for you',
+            '${user1Data?.name ?? ''} created a contract for you',
             'Licit Agreement');
         await EasyLoading.dismiss();
         rotateDialog(context, data);

@@ -103,7 +103,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       await updatePasswordDialog(context, cnic, _passwordController);
       cnicController.clear();
       _passwordController.clear();
-      EasyLoading.showSuccess("Now You Login");
+      EasyLoading.showSuccess("You have logged in");
       Navigator.pop(context);
     }
   }

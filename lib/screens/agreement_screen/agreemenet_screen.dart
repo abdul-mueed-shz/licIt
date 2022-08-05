@@ -42,7 +42,7 @@ class _AgreementScreenState extends State<AgreementScreen> {
             style: GoogleFonts.lato(fontSize: 16, color: Colors.grey),
           ),
           const Spacer(),
-          MyElevatedButton('Next Button', onTap: (_) async {
+          MyElevatedButton('Next', onTap: (_) async {
             await storage.removeUser();
             context.read<PromiseProvider>().clearAllData();
             context.read<JobProvider>().clearAllJobData();

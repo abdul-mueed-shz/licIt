@@ -44,9 +44,21 @@ class _IntroScreenState extends State<IntroScreen> {
         ],
         onDone: () => _onIntroEnd(context),
         showSkipButton: true,
-        skip: const Text('Skip'),
-        next: const Icon(Icons.arrow_forward),
-        done: const Text('Done', style: TextStyle(fontWeight: FontWeight.w600)),
+        skip: const Text(
+          'Skip',
+          style: TextStyle(
+            color: Colors.green,
+          ),
+        ),
+        next: const Icon(
+          Icons.arrow_forward,
+          color: Colors.green,
+        ),
+        done: const Text('Done',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.green,
+            )),
         curve: Curves.fastLinearToSlowEaseIn,
         controlsMargin: const EdgeInsets.all(16),
         dotsDecorator: const DotsDecorator(
@@ -54,7 +66,9 @@ class _IntroScreenState extends State<IntroScreen> {
           color: Color(0xFFBDBDBD),
           activeSize: Size(22.0, 10.0),
           activeShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(25.0)),
+            borderRadius: BorderRadius.all(Radius.circular(
+              25.0,
+            )),
           ),
         ),
       ),
@@ -78,7 +92,7 @@ class _IntroScreenState extends State<IntroScreen> {
               style: GoogleFonts.spartan(
                 fontWeight: FontWeight.w800,
                 fontSize: 30,
-                color: Colors.blue,
+                color: Colors.green,
               ),
               children: [
                 TextSpan(
@@ -86,7 +100,7 @@ class _IntroScreenState extends State<IntroScreen> {
                   style: GoogleFonts.spartan(
                     fontWeight: FontWeight.w800,
                     fontSize: 30,
-                    color: Colors.blue,
+                    color: Colors.green,
                   ),
                 )
               ])),

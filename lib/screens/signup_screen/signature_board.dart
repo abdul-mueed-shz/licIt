@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:signature/signature.dart';
+
 class SignatureBoard extends StatefulWidget {
   const SignatureBoard({Key? key}) : super(key: key);
 
@@ -12,7 +13,6 @@ class SignatureBoard extends StatefulWidget {
 }
 
 class _SignatureBoardState extends State<SignatureBoard> {
-
   File? imageFile;
   final SignatureController _controller = SignatureController(
     penStrokeWidth: 1,
@@ -28,22 +28,27 @@ class _SignatureBoardState extends State<SignatureBoard> {
     _controller.addListener(() => print('Value changed'));
   }
 
-  Future<Uint8List?> exportSignature()async{
-    final exportController= SignatureController(penColor: Colors.black,penStrokeWidth: 2 , exportBackgroundColor: Colors.white,points: _controller.points);
-    final signature= await exportController.toPngBytes();
+  Future<Uint8List?> exportSignature() async {
+    final exportController = SignatureController(
+        penColor: Colors.black,
+        penStrokeWidth: 2,
+        exportBackgroundColor: Colors.white,
+        points: _controller.points);
+    final signature = await exportController.toPngBytes();
     exportController.dispose();
     return signature;
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.green,title: const Text("Signature Board"),centerTitle: true),
+      appBar: AppBar(
+          backgroundColor: Colors.green,
+          title: const Text("Signature Board"),
+          centerTitle: true),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-
           //SIGNATURE CANVAS
           Expanded(
             flex: 4,
@@ -65,23 +70,20 @@ class _SignatureBoardState extends State<SignatureBoard> {
                     icon: const Icon(Icons.check),
                     color: Colors.blue,
                     onPressed: () async {
-                      if  (_controller.isNotEmpty) {
-                        final signature =await exportSignature();
+                      if (_controller.isNotEmpty) {
+                        final signature = await exportSignature();
 
                         if (signature != null) {
-
                           Uint8List imageInUnit8List = signature;
                           final tempDir = await getTemporaryDirectory();
-                          File file = await File('${tempDir.path}/image.png').create();
+                          File file =
+                              await File('${tempDir.path}/image.png').create();
                           file.writeAsBytesSync(imageInUnit8List);
                           setState(() {
-                            imageFile= file;
+                            imageFile = file;
                           });
-                          Navigator.pop(context,file);
-
-
+                          Navigator.pop(context, file);
                         }
-
                       }
                     },
                   ),
@@ -111,15 +113,8 @@ class _SignatureBoardState extends State<SignatureBoard> {
               ),
             ),
           ),
-
         ],
       ),
     );
-
   }
-
-
-
-
-
 }

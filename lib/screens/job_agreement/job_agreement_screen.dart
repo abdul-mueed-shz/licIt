@@ -149,7 +149,8 @@ class _JobAgreementScreenState extends State<JobAgreementScreen> {
                           const SizedBox(height: 30),
                           Align(
                             alignment: Alignment.topLeft,
-                            child: Text('Our Company is An FYP ka aidea \n',
+                            child: Text(
+                                'Our company welcomes you and is looking forward to work with you\n',
                                 textAlign: TextAlign.left,
                                 style: GoogleFonts.spartan(
                                     fontWeight: FontWeight.bold,
